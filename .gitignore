@@ -1,0 +1,13 @@
+.vs
+.git
+/BoyfriendBot.ConsoleApp/bin/
+/BoyfriendBot.ConsoleApp/obj/
+/BoyfriendBot.Domain/bin/
+/BoyfriendBot.Domain/obj/
+/BoyfriendBot.WebApp/bin/
+/BoyfriendBot.WebApp/obj/
+*.exe
+*.dll
+*.db
+*.xml
+*.txt
