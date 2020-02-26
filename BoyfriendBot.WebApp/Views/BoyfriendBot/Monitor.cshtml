@@ -1,0 +1,21 @@
+﻿@model BoyfriendBot.WebApp.Models.MonitorViewModel
+
+<h1>BoyfriendBot v.0.0.1</h1>
+<p>@Model.Description</p>
+
+<table>
+    <tr>
+        <th>Feature</th>
+        <th>State</th>
+    </tr>
+    <tr>
+        <td>Listening</td>
+        <td>@Model.Listening</td>
+    </tr>
+    <tr>
+        <td>Scheduling messages</td>
+        <td>@Model.SchedulingMessages</td>
+    </tr>
+</table>
+
+<p>Total users registered: @Model.TotalUsers</p>
