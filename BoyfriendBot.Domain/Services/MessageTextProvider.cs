@@ -23,9 +23,23 @@ namespace BoyfriendBot.Domain.Services
         public string GetMessage(PartOfDay partOfDay)
         {
             var path = Path.Combine(Environment.CurrentDirectory, _appSettings.RelativeFilePath);
-            using var file = File.Open(path, FileMode.Open);
 
-            var xDoc = XDocument.Load(file);
+            FileStream file = null; 
+            try
+            {
+                file = File.Open(path, FileMode.Open);
+            }
+            catch(FileNotFoundException ex)
+            {
+                // log
+                throw;
+            }
+
+            XDocument xDoc = null;
+            using (file)
+            {
+                xDoc = XDocument.Load(file);
+            }
 
             var xPart = xDoc.Root.Element(partOfDay.Name);
 
