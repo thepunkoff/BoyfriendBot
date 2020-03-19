@@ -135,11 +135,11 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             if (restTimeRange.Difference <= TimeSpan.FromHours(_appSettings.ThresholdInHours))
             {
-                GenerateMessagesDateTimesForPart(partOfDay, restTimeRange, currentPart: true, oneMessage: true);
+                GenerateMessagesDateTimesForPart(partOfDay, restTimeRange, oneMessage: true);
             }
             else
             {
-                GenerateMessagesDateTimesForPart(partOfDay, restTimeRange, currentPart: true);
+                GenerateMessagesDateTimesForPart(partOfDay, restTimeRange);
             }
 
             // for rest parts
@@ -150,9 +150,9 @@ namespace BoyfriendBot.Domain.Services.Hosted
             }
         }
 
-        private void GenerateMessagesDateTimesForPart(PartOfDay partOfDay, TimeSpanRange range, bool currentPart = false, bool oneMessage = false)
+        private void GenerateMessagesDateTimesForPart(PartOfDay partOfDay, TimeSpanRange range, bool oneMessage = false)
         {
-            var count = MessageCounts[partOfDay];
+            var count = oneMessage ? 1: MessageCounts[partOfDay];
             
             var rng = new Random();
            
