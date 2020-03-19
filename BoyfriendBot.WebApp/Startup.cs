@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using AutoMapper;
 using BoyfriendBot.Domain.AppSettings;
 using BoyfriendBot.Domain.Data.Context;
 using BoyfriendBot.Domain.Data.Context.Interfaces;
+using BoyfriendBot.Domain.Infrastructure.Mapping;
 using BoyfriendBot.Domain.Services;
 using BoyfriendBot.Domain.Services.Hosted;
 using BoyfriendBot.Domain.Services.Interfaces;
@@ -56,6 +59,8 @@ namespace BoyfriendBot.WebApp
                 .AddSingleton<IMonitoringManager, MonitoringManager>()
 
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)
+
+                .AddAutoMapper(typeof(MessageToUserDboProfile))
                 .AddMvc();
         }
 
@@ -67,6 +72,8 @@ namespace BoyfriendBot.WebApp
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 

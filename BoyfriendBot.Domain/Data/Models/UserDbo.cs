@@ -8,7 +8,10 @@ namespace BoyfriendBot.Domain.Data.Models
     public class UserDbo
     {
         [Key]
+        public long UserId { get; set; }
         public long ChatId { get; set; }
-        public string LastKnownUsername { get; set; }
+        public string Username { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

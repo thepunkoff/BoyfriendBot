@@ -1,7 +1,9 @@
 ﻿@model BoyfriendBot.WebApp.Models.MonitorViewModel
 
+
 <h1>BoyfriendBot v.0.0.1</h1>
 <p>@Model.Description</p>
+<p>(@Model.Uptime)</p>
 
 <table>
     <tr>
@@ -19,3 +21,5 @@
 </table>
 
 <p>Total users registered: @Model.TotalUsers</p>
+
+<button onClick="window.location.reload();">Refresh</button>

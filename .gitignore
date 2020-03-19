@@ -6,8 +6,4 @@
 /BoyfriendBot.Domain/obj/
 /BoyfriendBot.WebApp/bin/
 /BoyfriendBot.WebApp/obj/
-*.exe
-*.dll
-*.db
-*.xml
-*.txt
+/BoyfriendBot.WebApp/Data/
