@@ -7,7 +7,9 @@ using BoyfriendBot.Domain.Services.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -144,8 +146,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
             {
                 sb.AppendLine($"Document recieved. File name: \"{message.Document.FileName}\"");
             }
-
-            var log = sb.ToString().TrimEnd('\n');
+            
+            var log = sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
 
             _logger.LogInformation(log);
         }
