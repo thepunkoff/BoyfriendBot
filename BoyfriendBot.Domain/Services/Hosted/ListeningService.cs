@@ -1,4 +1,5 @@
-﻿using BoyfriendBot.Domain.AppSettings;
+﻿using AutoMapper;
+using BoyfriendBot.Domain.AppSettings;
 using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Hosted.Interfaces;
@@ -13,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Types;
 
 namespace BoyfriendBot.Domain.Services.Hosted
 {
@@ -24,6 +26,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly IUserStorage _userStorage;
         private readonly ListeningServiceAppSettings _appSettings;
         private readonly IMonitoringManager _monitoringManager;
+        private readonly IMapper _mapper;
 
         public ListeningService(
               ITelegramClientWrapper telegramClientWrapper
@@ -32,6 +35,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             , IUserStorage userCache
             , IOptions<ListeningServiceAppSettings> appSettings
             , IMonitoringManager monitoringManager
+            , IMapper mapper
             )
         {
             _botClient = telegramClientWrapper.Client;
@@ -40,6 +44,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _userStorage = userCache;
             _appSettings = appSettings.Value;
             _monitoringManager = monitoringManager;
+            _mapper = mapper;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -69,12 +74,13 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
         async void OnMessage(object sender, MessageEventArgs eventArgs)
         {
-            var userName = eventArgs.Message.From.Username;
-            if (!_userStorage.HasUser(userName))
+            var userId = eventArgs.Message.From.Id;
+
+            if (!_userStorage.HasUser(userId))
             {
-                var chatId = eventArgs.Message.Chat.Id;
-                
-                await _userStorage.AddNewUser(userName, chatId);
+                var mappedUser = _mapper.Map<UserDbo>(eventArgs.Message);
+
+                await _userStorage.AddNewUser(mappedUser);
             }
             await _botClient.SendTextMessageAsync(eventArgs.Message.Chat, "Прости, я тебя пока что не понимаю!");
         }

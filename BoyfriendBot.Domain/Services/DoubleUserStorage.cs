@@ -1,6 +1,7 @@
 ﻿using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace BoyfriendBot.Domain.Services
     public class DoubleUserStorage : IUserStorage
     {
         private readonly IBoyfriendBotDbContext _dbContext;
-        private Dictionary<string, long> _userCache = new Dictionary<string, long>();
+        private Dictionary<long, long> _userCache = new Dictionary<long, long>();
 
         public DoubleUserStorage(IBoyfriendBotDbContext dbContext)
         {
@@ -18,23 +19,32 @@ namespace BoyfriendBot.Domain.Services
 
             var dbos = _dbContext.User.ToList();
 
-            dbos.ForEach(x => _userCache.Add(x.LastKnownUsername, x.ChatId));
+            dbos.ForEach(x => _userCache.Add(x.UserId, x.ChatId));
         }
 
-        public bool HasUser(string userName)
+        public bool HasUser(long userId)
         {
-            return _userCache.ContainsKey(userName);
+            return _userCache.ContainsKey(userId);
         }
 
-        public async Task AddNewUser(string userName, long chatId)
+        public async Task AddNewUser(long userId, long chatId)
         {
-            _userCache.Add(userName, chatId);
+            _userCache.Add(userId, chatId);
 
             var userDbo = new UserDbo
             {
-                LastKnownUsername = userName,
+                UserId = userId,
                 ChatId = chatId
             };
+
+            _dbContext.User.Add(userDbo);
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task AddNewUser(UserDbo userDbo)
+        {
+            _userCache.Add(userDbo.UserId, userDbo.ChatId);
 
             _dbContext.User.Add(userDbo);
 

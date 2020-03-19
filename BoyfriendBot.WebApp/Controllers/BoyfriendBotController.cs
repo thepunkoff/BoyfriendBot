@@ -2,6 +2,8 @@
 using BoyfriendBot.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics;
 
 namespace BoyfriendBot.WebApp.Controllers
 {
@@ -27,6 +29,7 @@ namespace BoyfriendBot.WebApp.Controllers
             var monitoring = new MonitorViewModel
             {
                 Description = "online",
+                Uptime = DateTime.Now - Process.GetCurrentProcess().StartTime.ToUniversalTime(),
                 Listening = _monitoringManager.Listening,
                 SchedulingMessages = _monitoringManager.SchedulingMessages,
                 TotalUsers = _monitoringManager.GetTotalUsers()
