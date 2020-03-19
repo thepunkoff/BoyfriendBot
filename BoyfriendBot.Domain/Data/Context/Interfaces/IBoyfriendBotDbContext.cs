@@ -11,6 +11,7 @@ namespace BoyfriendBot.Domain.Data.Context.Interfaces
     public interface IBoyfriendBotDbContext
     {
         DbSet<UserDbo> User { get; set; }
+        DbSet<UserSettingsDbo> UserSettings { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

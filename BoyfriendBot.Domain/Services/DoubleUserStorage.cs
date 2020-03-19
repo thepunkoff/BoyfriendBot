@@ -22,6 +22,13 @@ namespace BoyfriendBot.Domain.Services
             dbos.ForEach(x => _userCache.Add(x.UserId, x.ChatId));
         }
 
+        public bool TryGetChatId(long userId, out long chatId)
+        {
+            _userCache.TryGetValue(userId, out chatId);
+
+            return chatId != 0;
+        }
+
         public bool HasUser(long userId)
         {
             return _userCache.ContainsKey(userId);

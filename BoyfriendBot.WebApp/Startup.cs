@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using BoyfriendBot.Domain.AppSettings;
+using BoyfriendBot.Domain.Commands;
 using BoyfriendBot.Domain.Data.Context;
 using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Infrastructure.Mapping;
@@ -42,15 +43,19 @@ namespace BoyfriendBot.WebApp
                 .CreateLogger();
 
             services
+
+                // Configuration
                 .Configure<DatabaseAppSettings>(Configuration.GetSection("Database"))
                 .Configure<MessageTextProviderAppSettings>(Configuration.GetSection("MessageTextProvider"))
                 .Configure<ScheduledMessageServiceAppSettings>(Configuration.GetSection("ScheduledMessageService"))
                 .Configure<ListeningServiceAppSettings>(Configuration.GetSection("ListeningService"))
                 .AddSingleton(Configuration)
 
+                // Hosted
                 .AddHostedService<ScheduledMessageService>()
                 .AddHostedService<ListeningService>()
 
+                // Services
                 .AddSingleton<IUserStorage, DoubleUserStorage>()
 
                 .AddSingleton<IMessageTextProvider, MessageTextProvider>()
@@ -58,8 +63,17 @@ namespace BoyfriendBot.WebApp
                 .AddSingleton<IBulkMessagingTelegramClient, BulkMessagingTelegramClient>()
                 .AddSingleton<IMonitoringManager, MonitoringManager>()
 
+                // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)
 
+                // Commands
+                .AddTransient<ICommandProcessor, CommandProcessor>()
+
+                .AddTransient<NullCommand>()
+                .AddTransient<ChoseSettingsCommand>()
+                .AddTransient<MessagesSettingsCommand>()
+
+                // Other
                 .AddAutoMapper(typeof(MessageToUserDboProfile))
                 .AddMvc();
         }

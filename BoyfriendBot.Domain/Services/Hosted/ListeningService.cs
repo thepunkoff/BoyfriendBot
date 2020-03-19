@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -23,6 +22,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly TelegramBotClient _botClient;
         private readonly ILogger<ListeningService> _logger;
         private readonly IBoyfriendBotDbContext _dbContext;
+        private readonly ICommandProcessor _commandProcessor;
         private readonly IUserStorage _userStorage;
         private readonly ListeningServiceAppSettings _appSettings;
         private readonly IMonitoringManager _monitoringManager;
@@ -32,6 +32,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
               ITelegramClientWrapper telegramClientWrapper
             , ILogger<ListeningService> logger
             , IBoyfriendBotDbContext dbContext
+            , ICommandProcessor commandProcessor
             , IUserStorage userCache
             , IOptions<ListeningServiceAppSettings> appSettings
             , IMonitoringManager monitoringManager
@@ -41,6 +42,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _botClient = telegramClientWrapper.Client;
             _logger = logger;
             _dbContext = dbContext;
+            _commandProcessor = commandProcessor;
             _userStorage = userCache;
             _appSettings = appSettings.Value;
             _monitoringManager = monitoringManager;
@@ -85,7 +87,11 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
                 await _userStorage.AddNewUser(mappedUser);
             }
-            await _botClient.SendTextMessageAsync(eventArgs.Message.Chat, "Прости, я тебя пока что не понимаю!");
+
+            if (message.Text.StartsWith("/"))
+            {
+                await _commandProcessor.ProcessCommand(message);
+            }
         }
 
         private void LogMessage(Message message)

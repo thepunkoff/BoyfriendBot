@@ -8,6 +8,7 @@ namespace BoyfriendBot.Domain.Services.Interfaces
 {
     public interface IUserStorage
     {
+        bool TryGetChatId(long userId, out long chatId);
         bool HasUser(long userId);
         Task AddNewUser(long userId, long chatId);
         Task AddNewUser(UserDbo userDbo);

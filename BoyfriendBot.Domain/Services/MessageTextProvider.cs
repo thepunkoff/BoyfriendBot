@@ -20,16 +20,32 @@ namespace BoyfriendBot.Domain.Services
             _appSettings = appSettings.Value;
         }
 
-        public string GetMessage(PartOfDay partOfDay)
+        public string GetMessage(string category)
+        {
+            var xDoc = GetXDoc();
+
+            var xCategory = xDoc.Root.Element(category);
+
+            var messages = xCategory.Elements().Select(x => x.Value).ToList();
+
+            var rng = new Random();
+
+            var index = rng.Next(messages.Count);
+
+            return messages[index];
+
+        }
+
+        private XDocument GetXDoc()
         {
             var path = Path.Combine(Environment.CurrentDirectory, _appSettings.RelativeFilePath);
 
-            FileStream file = null; 
+            FileStream file = null;
             try
             {
                 file = File.Open(path, FileMode.Open);
             }
-            catch(FileNotFoundException ex)
+            catch (FileNotFoundException ex)
             {
                 // log
                 throw;
@@ -41,15 +57,8 @@ namespace BoyfriendBot.Domain.Services
                 xDoc = XDocument.Load(file);
             }
 
-            var xPart = xDoc.Root.Element(partOfDay.Name);
-
-            var messages = xPart.Elements().Select(x => x.Value).ToList();
-
-            var rng = new Random();
-
-            var index = rng.Next(messages.Count);
-
-            return messages[index];
+            return xDoc;
         }
+
     }
 }

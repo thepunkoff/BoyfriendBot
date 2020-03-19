@@ -4,6 +4,6 @@ namespace BoyfriendBot.Domain.Services.Interfaces
 {
     public interface IMessageTextProvider
     {
-        string GetMessage(PartOfDay partOfDay);
+        string GetMessage(string category);
     }
 }
