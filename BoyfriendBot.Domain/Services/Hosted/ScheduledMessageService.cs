@@ -18,7 +18,6 @@ namespace BoyfriendBot.Domain.Services.Hosted
     public class ScheduledMessageService : IHostedService, IScheduledMessageService
     {
         private readonly ScheduledMessageServiceAppSettings _appSettings;
-        private readonly IMessageTextProvider _messageTextProvider;
         private readonly IBulkMessagingTelegramClient _bulkMessagingTelegramClient;
         private readonly ILogger<ScheduledMessageService> _logger;
         private readonly IMonitoringManager _monitoringManager;
@@ -29,14 +28,12 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
         public ScheduledMessageService(
               IOptions<ScheduledMessageServiceAppSettings> appSettings
-            , IMessageTextProvider messageTextProvider
             , IBulkMessagingTelegramClient bulkMessagingTelegramClient
             , ILogger<ScheduledMessageService> logger
             , IMonitoringManager monitoringManager
             )
         {
             _appSettings = appSettings.Value;
-            _messageTextProvider = messageTextProvider;
             _bulkMessagingTelegramClient = bulkMessagingTelegramClient;
             _logger = logger;
             _monitoringManager = monitoringManager;
@@ -47,6 +44,11 @@ namespace BoyfriendBot.Domain.Services.Hosted
             if (!_appSettings.ScheduledMessageServiceOn)
             {
                 return Task.CompletedTask;
+            }
+
+            if (_appSettings.WakeUpMessageOn)
+            {
+                SendWakeUpMessage();
             }
 
             _logger.LogInformation("Initializing scheduled messaging service...");
@@ -66,11 +68,16 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             return Task.CompletedTask;
         }
+
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _monitoringManager.SchedulingMessages = false;
 
             _logger.LogInformation("Stopped");
+        }
+        private async void SendWakeUpMessage()
+        {
+            await _bulkMessagingTelegramClient.SendWakeUpMessageToAllUsersAsync();
         }
 
         public async Task Run()
@@ -88,9 +95,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
                 if (ShouldSendMessage(out var partOfDay))
                 {
-                    var message = _messageTextProvider.GetMessage(partOfDay);
-
-                    await _bulkMessagingTelegramClient.SendTextMessageToAllUsersAsync(message);
+                    await _bulkMessagingTelegramClient.SendScheduledMessageToAllUsersAsync(partOfDay);
                 }
             }
         }

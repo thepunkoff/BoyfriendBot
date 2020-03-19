@@ -3,6 +3,7 @@
     public class ScheduledMessageServiceAppSettings
     {
         public bool ScheduledMessageServiceOn { get; set; }
+        public bool WakeUpMessageOn { get; set; }
         public bool ScheduleInMorning { get; set; }
         public int MorningMessagesCount { get; set; }
         public bool ScheduleInAfternoon { get; set; }

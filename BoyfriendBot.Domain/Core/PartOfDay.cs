@@ -26,7 +26,7 @@ namespace BoyfriendBot.Domain.Core
         public static PartOfDay Afternoon => new PartOfDay { Name = Const.PartOfDay.Afternoon };
 
         public static PartOfDay Evening => new PartOfDay { Name = Const.PartOfDay.Evening };
-
+        
         public PartOfDay Next
         {
             get
