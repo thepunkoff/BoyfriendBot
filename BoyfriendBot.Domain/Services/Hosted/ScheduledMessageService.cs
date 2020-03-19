@@ -68,7 +68,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         }
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _monitoringManager.SchedulingMessages = true;
+            _monitoringManager.SchedulingMessages = false;
 
             _logger.LogInformation("Stopped");
         }
