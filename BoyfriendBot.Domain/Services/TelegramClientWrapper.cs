@@ -43,7 +43,18 @@ namespace BoyfriendBot.Domain.Services
                 UseDefaultCredentials = useDefaultCredentials
             };
 
-            var token = File.ReadAllText(Configuration.GetValue<string>("BotTokenRelativeFilePath"));
+            var tokenFile = Configuration.GetValue<string>("BotTokenRelativePath");
+
+            string token = null;
+            try
+            {
+                token = File.ReadAllText(tokenFile);
+            }
+            catch (FileNotFoundException ex)
+            {
+                // log
+                throw;
+            }
 
             Client = new TelegramBotClient(token, proxy);
         }
@@ -52,7 +63,17 @@ namespace BoyfriendBot.Domain.Services
         {
             var proxyJsonPath = Configuration.GetValue<string>("ProxyConfigRelativePath");
             var fullPath = Path.Combine(Environment.CurrentDirectory, proxyJsonPath);
-            var proxyJsonFile = File.ReadAllText(fullPath);
+
+            string proxyJsonFile = null;
+            try
+            {
+                proxyJsonFile = File.ReadAllText(fullPath);
+            }
+            catch (FileNotFoundException ex)
+            {
+                // log
+                throw;
+            }
 
             var proxyAppSettings = JsonConvert.DeserializeObject<ProxyAppSettngs>(proxyJsonFile);
 
