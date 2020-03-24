@@ -49,6 +49,8 @@ namespace BoyfriendBot.WebApp
                 .Configure<MessageTextProviderAppSettings>(Configuration.GetSection("MessageTextProvider"))
                 .Configure<ScheduledMessageServiceAppSettings>(Configuration.GetSection("ScheduledMessageService"))
                 .Configure<ListeningServiceAppSettings>(Configuration.GetSection("ListeningService"))
+                .Configure<DateTimeGeneratorAppSettings>(Configuration.GetSection("DateTimeGenerator"))
+
                 .AddSingleton(Configuration)
 
                 // Hosted
@@ -58,10 +60,11 @@ namespace BoyfriendBot.WebApp
                 // Services
                 .AddSingleton<IUserStorage, DoubleUserStorage>()
 
-                .AddSingleton<IMessageTextProvider, MessageTextProvider>()
-                .AddSingleton<ITelegramClientWrapper, TelegramClientWrapper>()
-                .AddSingleton<IBulkMessagingTelegramClient, BulkMessagingTelegramClient>()
-                .AddSingleton<IMonitoringManager, MonitoringManager>()
+                .AddTransient<IMessageTextProvider, MessageTextProvider>()
+                .AddTransient<ITelegramClientWrapper, TelegramClientWrapper>()
+                .AddTransient<IBulkMessagingTelegramClient, BulkMessagingTelegramClient>()
+                .AddTransient<IMonitoringManager, MonitoringManager>()
+                .AddTransient<IDateTimeGenerator, DateTimeGenerator>()
 
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)

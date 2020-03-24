@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BoyfriendBot.Domain.Core
 {
-    public class TimeSpanRange : IRange<TimeSpan>
+    public struct TimeSpanRange : IRange<TimeSpan>
     {
         public TimeSpanRange(TimeSpan start, TimeSpan end)
         {
