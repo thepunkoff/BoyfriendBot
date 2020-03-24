@@ -81,7 +81,9 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             _logger.LogInformation("Started");
 
-            await Task.Run(Run);
+            var task = Task.Run(Run);
+
+            return;
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
