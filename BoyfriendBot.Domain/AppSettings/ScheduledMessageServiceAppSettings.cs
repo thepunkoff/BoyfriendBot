@@ -12,7 +12,6 @@
         public int EveningMessagesCount { get; set; }
         public bool ScheduleInNight { get; set; }
         public int NightMessagesCount { get; set; }
-
-        public int ThresholdInHours { get; set; }
+        public double ThresholdInHours { get; set; }
     }
 }

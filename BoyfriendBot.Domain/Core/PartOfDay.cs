@@ -8,10 +8,10 @@ namespace BoyfriendBot.Domain.Core
     {
         private static Dictionary<PartOfDay, TimeSpanRange> _ranges { get; } = new Dictionary<PartOfDay, TimeSpanRange>
         {
-            [Night] = new TimeSpanRange(TimeSpan.FromHours(0), TimeSpan.FromHours(5)),
-            [Morning] = new TimeSpanRange(TimeSpan.FromHours(5), TimeSpan.FromHours(12)),
-            [Afternoon] = new TimeSpanRange(TimeSpan.FromHours(12), TimeSpan.FromHours(18)),
-            [Evening] = new TimeSpanRange(TimeSpan.FromHours(18), TimeSpan.FromHours(24)),
+            [Night] = new TimeSpanRange(TimeSpan.FromHours(0), new TimeSpan(4, 59, 59)),
+            [Morning] = new TimeSpanRange(TimeSpan.FromHours(5), new TimeSpan(1, 59, 59)),
+            [Afternoon] = new TimeSpanRange(TimeSpan.FromHours(12), new TimeSpan(17, 59, 59)),
+            [Evening] = new TimeSpanRange(TimeSpan.FromHours(18), new TimeSpan(23, 59, 59)),
         };
 
         public string Name { get; set; }

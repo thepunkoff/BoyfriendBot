@@ -21,6 +21,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly IBulkMessagingTelegramClient _bulkMessagingTelegramClient;
         private readonly ILogger<ScheduledMessageService> _logger;
         private readonly IMonitoringManager _monitoringManager;
+        private readonly IDateTimeGenerator _dateTimeGenerator;
 
         private Dictionary<PartOfDay, int> MessageCounts { get; set; }
 
@@ -31,12 +32,27 @@ namespace BoyfriendBot.Domain.Services.Hosted
             , IBulkMessagingTelegramClient bulkMessagingTelegramClient
             , ILogger<ScheduledMessageService> logger
             , IMonitoringManager monitoringManager
+            , IDateTimeGenerator dateTimeGenerator
             )
         {
             _appSettings = appSettings.Value;
             _bulkMessagingTelegramClient = bulkMessagingTelegramClient;
             _logger = logger;
             _monitoringManager = monitoringManager;
+            _dateTimeGenerator = dateTimeGenerator;
+
+            _logger.LogInformation("Initializing scheduled messaging service...");
+
+            // get message count from personal settings
+            MessageCounts = new Dictionary<PartOfDay, int>
+            {
+                [PartOfDay.Night] = _appSettings.NightMessagesCount,
+                [PartOfDay.Morning] = _appSettings.MorningMessagesCount,
+                [PartOfDay.Afternoon] = _appSettings.AfternoonMessagesCount,
+                [PartOfDay.Evening] = _appSettings.EveningMessagesCount
+            };
+
+            MessageSchedule = new List<DateTime>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -51,16 +67,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 SendWakeUpMessage();
             }
 
-            _logger.LogInformation("Initializing scheduled messaging service...");
-
-            InitializeCountDictionary();
             GenerateNewMessageDateTimes();
-
-            _logger.LogInformation("Messages scheduled:");
-            foreach (var dt in MessageSchedule)
-            {
-                _logger.LogInformation($"{dt.PartOfDay().Name} - {dt}");
-            }
 
             _logger.LogInformation("Started");
 
@@ -116,68 +123,34 @@ namespace BoyfriendBot.Domain.Services.Hosted
             return false;
         }
 
-        private void InitializeCountDictionary()
-        {
-            MessageCounts = new Dictionary<PartOfDay, int>
-            {
-                [PartOfDay.Night] = _appSettings.NightMessagesCount,
-                [PartOfDay.Morning] = _appSettings.MorningMessagesCount,
-                [PartOfDay.Afternoon] = _appSettings.AfternoonMessagesCount,
-                [PartOfDay.Evening] = _appSettings.EveningMessagesCount
-            };
-        }
-
         private void GenerateNewMessageDateTimes()
         {
-            MessageSchedule = new List<DateTime>();
+            var now = DateTime.Now;
 
-            var partOfDay = DateTime.Now.PartOfDay();
+            var partOfDay = now.PartOfDay();
 
             // for current part
-            var start = DateTime.Now.TimeOfDay;
+            var start = now.TimeOfDay;
             var end = partOfDay.End;
             var restTimeRange = new TimeSpanRange(start, end);
 
             if (restTimeRange.Difference <= TimeSpan.FromHours(_appSettings.ThresholdInHours))
             {
-                GenerateMessagesDateTimesForPart(partOfDay, restTimeRange, oneMessage: true);
+                MessageSchedule.AddRange(
+                    _dateTimeGenerator.GenerateDateTimesWithinRange(restTimeRange, messageCount: 1));
             }
             else
             {
-                GenerateMessagesDateTimesForPart(partOfDay, restTimeRange);
+                MessageSchedule.AddRange(
+                    _dateTimeGenerator.GenerateDateTimesWithinRange(restTimeRange, MessageCounts[partOfDay]));
             }
 
             // for rest parts
             foreach (var p in partOfDay.Rest)
             {
                 var range = new TimeSpanRange(p.Start, p.End);
-                GenerateMessagesDateTimesForPart(p, range);
+                _dateTimeGenerator.GenerateDateTimesWithinRange(range, MessageCounts[p]);
             }
-        }
-
-        private void GenerateMessagesDateTimesForPart(PartOfDay partOfDay, TimeSpanRange range, bool oneMessage = false)
-        {
-            var count = oneMessage ? 1: MessageCounts[partOfDay];
-            
-            var rng = new Random();
-           
-            for (int i = 0; i < count; i++)
-            {
-                var day = default(DateTime);
-                if (partOfDay.Name == Const.PartOfDay.Night)
-                {
-                    day = DateTime.Now.Date.AddDays(1);
-                }
-                else
-                {
-                    day = DateTime.Now.Date;
-                }
-
-                var maxSeconds = (int)range.End.Subtract(range.Start).TotalSeconds;
-
-                var randomDateTime = day.Add(range.Start).AddSeconds(rng.Next(maxSeconds));
-                MessageSchedule.Add(randomDateTime);
-            }
-        }        
+        }      
     }
 }
