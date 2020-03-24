@@ -29,7 +29,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly IMapper _mapper;
 
         public ListeningService(
-              ITelegramClientWrapper telegramClientWrapper
+              ITelegramBotClientWrapper telegramClientWrapper
             , ILogger<ListeningService> logger
             , IBoyfriendBotDbContext dbContext
             , ICommandProcessor commandProcessor

@@ -9,7 +9,7 @@ namespace BoyfriendBot.Domain.Core
         private static Dictionary<PartOfDay, TimeSpanRange> _ranges { get; } = new Dictionary<PartOfDay, TimeSpanRange>
         {
             [Night] = new TimeSpanRange(TimeSpan.FromHours(0), new TimeSpan(4, 59, 59)),
-            [Morning] = new TimeSpanRange(TimeSpan.FromHours(5), new TimeSpan(1, 59, 59)),
+            [Morning] = new TimeSpanRange(TimeSpan.FromHours(5), new TimeSpan(11, 59, 59)),
             [Afternoon] = new TimeSpanRange(TimeSpan.FromHours(12), new TimeSpan(17, 59, 59)),
             [Evening] = new TimeSpanRange(TimeSpan.FromHours(18), new TimeSpan(23, 59, 59)),
         };

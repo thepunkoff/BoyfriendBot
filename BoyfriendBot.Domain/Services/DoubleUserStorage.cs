@@ -1,6 +1,7 @@
 ﻿using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,15 @@ namespace BoyfriendBot.Domain.Services
             var dbos = _dbContext.User.ToList();
 
             dbos.ForEach(x => _userCache.Add(x.UserId, x.ChatId));
+        }
+
+        public async Task<List<UserDbo>> GetAllUsersForScheduledMessages()
+        {
+            return await _dbContext.User
+                .AsNoTracking()
+                .Include(x => x.UserSettings)
+                .Where(x => x.UserSettings.RecieveScheduled)
+                .ToListAsync();
         }
 
         public bool TryGetChatId(long userId, out long chatId)

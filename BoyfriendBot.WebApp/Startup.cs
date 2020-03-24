@@ -61,7 +61,8 @@ namespace BoyfriendBot.WebApp
                 .AddSingleton<IUserStorage, DoubleUserStorage>()
 
                 .AddTransient<IMessageTextProvider, MessageTextProvider>()
-                .AddTransient<ITelegramClientWrapper, TelegramClientWrapper>()
+                .AddTransient<ITelegramBotClientWrapper, TelegramBotClientWrapper>()
+                .AddTransient<ITelegramClient, TelegramClient>()
                 .AddTransient<IBulkMessagingTelegramClient, BulkMessagingTelegramClient>()
                 .AddTransient<IMonitoringManager, MonitoringManager>()
                 .AddTransient<IDateTimeGenerator, DateTimeGenerator>()
