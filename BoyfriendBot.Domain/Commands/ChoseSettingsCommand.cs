@@ -13,13 +13,13 @@ namespace BoyfriendBot.Domain.Commands
     {
         private readonly IUserStorage _userStorage;
         private readonly ILogger<ChoseSettingsCommand> _logger;
-        private readonly ITelegramClientWrapper _botClient;
+        private readonly ITelegramBotClientWrapper _botClient;
         private readonly IServiceProvider _serviceProvider;
 
         public ChoseSettingsCommand(
               IUserStorage userStorage
             , ILogger<ChoseSettingsCommand> logger
-            , ITelegramClientWrapper botClient
+            , ITelegramBotClientWrapper botClient
             , IServiceProvider serviceProvider
             )
         {

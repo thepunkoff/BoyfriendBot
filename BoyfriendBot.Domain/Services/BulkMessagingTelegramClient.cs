@@ -2,6 +2,7 @@
 using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Interfaces;
+using BoyfriendBot.Domain.Services.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace BoyfriendBot.Domain.Services
         private readonly IMessageTextProvider _messageTextProvider;
 
         public BulkMessagingTelegramClient(
-              ITelegramClientWrapper wrapper
+              ITelegramBotClientWrapper wrapper
             , IBoyfriendBotDbContext dbContext
             , IMessageTextProvider messageTextProvider
             )
@@ -31,9 +32,9 @@ namespace BoyfriendBot.Domain.Services
         }
 
 
-        public async Task<List<Message>> SendWakeUpMessageToAllUsersAsync()
+        public async Task<List<Message>> SendWakeUpMessageToAllUsersAsync(MessageType type)
         {
-            var message = _messageTextProvider.GetMessage(Const.XmlAliases.WakeUp);
+            var message = _messageTextProvider.GetMessage(Const.XmlAliases.WakeUp, type);
 
             var users = _dbContext.User
                 .Include(x => x.UserSettings)
@@ -42,9 +43,9 @@ namespace BoyfriendBot.Domain.Services
             return await SendTextMessageToUsersAsync(message, users);
         }
 
-        public async Task<List<Message>> SendScheduledMessageToAllUsersAsync(PartOfDay partOfDay)
+        public async Task<List<Message>> SendScheduledMessageToAllUsersAsync(PartOfDay partOfDay, MessageType type)
         {
-            var message = _messageTextProvider.GetMessage(partOfDay.Name);
+            var message = _messageTextProvider.GetMessage(partOfDay.Name, type);
 
             var users = _dbContext.User
                 .Include(x => x.UserSettings)

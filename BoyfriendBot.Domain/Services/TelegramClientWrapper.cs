@@ -1,26 +1,28 @@
 ﻿using BoyfriendBot.Domain.AppSettings;
 using BoyfriendBot.Domain.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
 using Telegram.Bot;
 
 namespace BoyfriendBot.Domain.Services
 {
-    public class TelegramClientWrapper : ITelegramClientWrapper
+    public class TelegramBotClientWrapper : ITelegramBotClientWrapper
     {
+        private readonly ILogger<TelegramBotClientWrapper> _logger;
         private IConfiguration Configuration { get; set; }
         public  TelegramBotClient Client { get; set; }
 
-        public TelegramClientWrapper(
+        public TelegramBotClientWrapper(
               IConfiguration configuration
+            , ILogger<TelegramBotClientWrapper> logger
             )
         {
+            _logger = logger;
+
             Configuration = configuration;
 
             var proxyAppSettings = GetProxyAppSettings();
@@ -52,12 +54,13 @@ namespace BoyfriendBot.Domain.Services
             }
             catch (FileNotFoundException ex)
             {
-                // log
+                _logger.LogError(ex.ToString());
                 throw;
             }
 
             Client = new TelegramBotClient(token, proxy);
         }
+
 
         private ProxyAppSettngs GetProxyAppSettings()
         {
@@ -71,7 +74,7 @@ namespace BoyfriendBot.Domain.Services
             }
             catch (FileNotFoundException ex)
             {
-                // log
+                _logger.LogError(ex.ToString());
                 throw;
             }
 

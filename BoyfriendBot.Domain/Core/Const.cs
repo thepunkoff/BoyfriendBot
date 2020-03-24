@@ -17,6 +17,8 @@ namespace BoyfriendBot.Domain.Core
 
         public class XmlAliases
         {
+            public const string TypeAttribute = "type";
+
             public const string WakeUp = "WakeUp";
         }
 

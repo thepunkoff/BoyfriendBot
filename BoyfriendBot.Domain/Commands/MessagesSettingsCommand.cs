@@ -15,7 +15,7 @@ namespace BoyfriendBot.Domain.Commands
     {
         private readonly IUserStorage _userStorage;
         private readonly ILogger<MessagesSettingsCommand> _logger;
-        private readonly ITelegramClientWrapper _botClient;
+        private readonly ITelegramBotClientWrapper _botClient;
         private readonly IServiceProvider _serviceProvider;
         private readonly IBoyfriendBotDbContext _dbContext;
 
@@ -24,7 +24,7 @@ namespace BoyfriendBot.Domain.Commands
         public MessagesSettingsCommand(
               IUserStorage userStorage
             , ILogger<MessagesSettingsCommand> logger
-            , ITelegramClientWrapper botClient
+            , ITelegramBotClientWrapper botClient
             , IServiceProvider serviceProvider
             , IBoyfriendBotDbContext dbContext
             )

@@ -24,6 +24,11 @@ namespace BoyfriendBot.Domain.Services
             _logger = logger;
         }
 
+        public DateTime GenerateRandomDateTimeWithinRange(DateTimeRange range)
+        {
+            return GenerateRandomDateTimesWithinRange(range, messageCount: 1)[0];
+        }
+
         public List<DateTime> GenerateDateTimesWithinRange(TimeSpanRange range, int messageCount)
         {
             _logger.LogInformation($"Generating schedule date times with the method: \"{_appSettings.DateTimeGenerationMethod}\"");
@@ -65,6 +70,26 @@ namespace BoyfriendBot.Domain.Services
                 var maxSeconds = (int)schedulingRange.Difference.TotalSeconds;
 
                 var randomDateTime = schedulingDay.Add(schedulingRange.Start).AddSeconds(rng.Next(maxSeconds));
+                dateTimes.Add(randomDateTime);
+            }
+
+            dateTimes.Sort();
+
+            return dateTimes;
+        }
+
+        private List<DateTime> GenerateRandomDateTimesWithinRange(DateTimeRange schedulingRange, int messageCount)
+        {
+            var dateTimes = new List<DateTime>();
+
+            var rng = new Random();
+
+            for (int i = 0; i < messageCount; i++)
+            {
+                var maxSeconds = (int)schedulingRange.Difference.TotalSeconds;
+
+                var randomDateTime = schedulingRange.Start.AddSeconds(rng.Next(maxSeconds));
+
                 dateTimes.Add(randomDateTime);
             }
 
