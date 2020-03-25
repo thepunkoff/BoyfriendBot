@@ -66,6 +66,7 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<IBulkMessagingTelegramClient, BulkMessagingTelegramClient>()
                 .AddTransient<IMonitoringManager, MonitoringManager>()
                 .AddTransient<IDateTimeGenerator, DateTimeGenerator>()
+                .AddTransient<IMessageSchedule, DoubleMessageSchedule>()
 
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)
