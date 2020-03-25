@@ -11,7 +11,7 @@ namespace BoyfriendBot.Domain.Infrastructure.Mapping
         {
             CreateMap<ScheduledMessageDbo, ScheduledMessage>()
             .ForMember(d => d.Guid, c => c.MapFrom(s => Guid.Parse(s.Guid)))
-            .ForMember(d => d.Type, c => c.MapFrom(s => Enum.Parse<MessageType>(s.Type)))
+            .ForMember(d => d.Rarity, c => c.MapFrom(s => Enum.Parse<MessageRarity>(s.Type)))
             .ForMember(d => d.ChatId, c => c.MapFrom(s => s.ChatId))
             .ForMember(d => d.Time, c => c.MapFrom(s => s.Time));
         }

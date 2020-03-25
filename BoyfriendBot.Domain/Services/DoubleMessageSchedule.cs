@@ -35,7 +35,7 @@ namespace BoyfriendBot.Domain.Services
 
         private List<ScheduledMessage> _scheduledMesageCache { get; set; }
 
-        public async Task<List<ScheduledMessage>> GetAllScheduledMessages()
+        public async Task<List<ScheduledMessage>> GetCopiesOfAllScheduledMessages()
         {
             if (_scheduledMesageCache.Count != 0)
             {

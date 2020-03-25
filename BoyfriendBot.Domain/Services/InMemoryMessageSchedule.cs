@@ -30,7 +30,7 @@ namespace BoyfriendBot.Domain.Services
 
         private List<ScheduledMessage> _scheduledMesageCache { get; set; }
 
-        public async Task<List<ScheduledMessage>> GetAllScheduledMessages()
+        public async Task<List<ScheduledMessage>> GetCopiesOfAllScheduledMessages()
         {
             return GetCachedMessages();
         }
@@ -40,6 +40,14 @@ namespace BoyfriendBot.Domain.Services
             var messages = new List<ScheduledMessage>();
 
             messages.AddRange(_scheduledMesageCache);
+
+            messages.Sort((x, y) =>
+                x.Time > y.Time
+                    ? 1
+                    : x.Time < y.Time
+                        ? -1
+                        : 0
+                    );
 
             return messages;
         }
@@ -65,6 +73,18 @@ namespace BoyfriendBot.Domain.Services
         public async Task RemoveAllScheduledMessages()
         {
             _scheduledMesageCache.Clear();
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            foreach (var message in GetCachedMessages())
+            {
+                sb.AppendLine(message.ToString());
+            }
+
+            return Environment.NewLine + sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
         }
     }
 }

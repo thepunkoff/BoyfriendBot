@@ -24,6 +24,7 @@ namespace BoyfriendBot.Domain.Data.Context
 
         public DbSet<UserDbo> User { get; set; }
         public DbSet<UserSettingsDbo> UserSettings { get; set; }
+        public DbSet<UserRarityWeightsDbo> RarityWeights { get; set; }
         public DbSet<ScheduledMessageDbo> MessageSchedule { get; set; }
         
 

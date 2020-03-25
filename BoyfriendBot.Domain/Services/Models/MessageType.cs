@@ -6,7 +6,11 @@ namespace BoyfriendBot.Domain.Services.Models
 {
     public enum MessageType
     {
-        PLAIN = 0,
-        SPECIAL = 1
+        STANDARD = 0,
+
+        GOODMORNING = 1,
+        LUNCH = 2,
+        DINNER = 3,
+        GOODNIGHT = 4
     }
 }

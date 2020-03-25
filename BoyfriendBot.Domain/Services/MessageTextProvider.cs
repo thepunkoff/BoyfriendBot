@@ -27,23 +27,26 @@ namespace BoyfriendBot.Domain.Services
             _logger = logger;
         }
 
-        public string GetMessage(string category, MessageType type)
+        public string GetMessage(string category, MessageType type, MessageRarity rarity)
         {
             var xDoc = GetXDoc();
 
             var xCategory = xDoc.Root.Element(category);
 
             var typeString = type.ToString().ToLowerInvariant();
+            var rarityString = rarity.ToString().ToLowerInvariant();
 
             var messages = xCategory
                 .Elements()
                 .Where(x => x.Attribute(Const.XmlAliases.TypeAttribute).Value == typeString)
+                .Where(x => x.Attribute(Const.XmlAliases.RarityAttribute).Value == rarityString)
                 .Select(x => x.Value)
                 .ToList();
 
             if (messages.Count == 0)
             {
-                throw new Exception("Cannot find any messages for query.");
+                _logger.LogWarning($"Couldn't find any message for query. Category: {xCategory}, Type: {typeString}, Rarity: {rarityString}");
+                return Const.RedAlertMessage;
             }
 
             var rng = new Random();
@@ -51,7 +54,6 @@ namespace BoyfriendBot.Domain.Services
             var index = rng.Next(messages.Count);
 
             return messages[index];
-
         }
 
         private XDocument GetXDoc()
