@@ -12,6 +12,7 @@ namespace BoyfriendBot.Domain.Data.Context.Interfaces
     {
         DbSet<UserDbo> User { get; set; }
         DbSet<UserSettingsDbo> UserSettings { get; set; }
+        DbSet<ScheduledMessageDbo> MessageSchedule { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

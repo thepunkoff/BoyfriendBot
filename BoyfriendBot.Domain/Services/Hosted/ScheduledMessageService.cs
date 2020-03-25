@@ -26,10 +26,9 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly IMonitoringManager _monitoringManager;
         private readonly IDateTimeGenerator _dateTimeGenerator;
         private readonly IUserStorage _userStorage;
-
+        private readonly IMessageSchedule _messageSchedule;
+        
         private Dictionary<PartOfDay, int> MessageCounts { get; set; }
-
-        private List<ScheduledMessage> MessageSchedule { get; set; }
 
         public ScheduledMessageService(
               IOptions<ScheduledMessageServiceAppSettings> appSettings
@@ -39,6 +38,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             , IMonitoringManager monitoringManager
             , IDateTimeGenerator dateTimeGenerator
             , IUserStorage userStorage
+            , IMessageSchedule messageSchedule
             )
         {
             _appSettings = appSettings.Value;
@@ -48,6 +48,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _monitoringManager = monitoringManager;
             _dateTimeGenerator = dateTimeGenerator;
             _userStorage = userStorage;
+            _messageSchedule = messageSchedule;
 
             _logger.LogInformation("Initializing scheduled messaging service...");
 
@@ -59,8 +60,6 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 [PartOfDay.Afternoon] = _appSettings.AfternoonMessagesCount,
                 [PartOfDay.Evening] = _appSettings.EveningMessagesCount
             };
-
-            MessageSchedule = new List<ScheduledMessage>();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -74,6 +73,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
             {
                 SendWakeUpMessage();
             }
+
+            await _messageSchedule.RemoveAllScheduledMessages();
 
             await ScheduleStandardMessages();
 
@@ -114,7 +115,12 @@ namespace BoyfriendBot.Domain.Services.Hosted
             {
                 if (DateTime.Now > dayBorder)
                 {
+                    await _messageSchedule.RemoveAllScheduledMessages();
+
                     await ScheduleStandardMessages();
+
+                    await ScheduleSpecialMessages();
+
                     dayBorder = DateTime.Now.Date.AddDays(1);
                 }
 
@@ -124,94 +130,121 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
         private async Task SendMessagesAsync()
         {
-            foreach (var message in MessageSchedule)
+            foreach (var message in await _messageSchedule.GetAllScheduledMessages())
             {
                 var now = DateTime.Now;
 
                 if (now >= message.Time)
                 {
-                    await _telegramClient.SendMessageAsync(now.PartOfDay(), message.Type, message.ChatId);
+                    await _telegramClient.SendMessageAsync(now.PartOfDay().Name, message.Type, message.ChatId);
 
                     _logger.LogInformation($"Scheduled message sent. ChatId: {message.ChatId}, Category: {now.PartOfDay().Name}, Type: {message.Type}.");
 
-                    MessageSchedule.Remove(message);
+                    await _messageSchedule.RemoveScheduledMessage(message);
                 }
             }
         }
 
         private async Task ScheduleSpecialMessages()
         {
-            var rng = new Random();
-            if(!(rng.NextDouble() < 0.05d))
-            {
-                return;
-            }
-
             var users = await _userStorage.GetAllUsersForScheduledMessages();
 
             foreach (var chatId in users.Select(x => x.ChatId))
             {
+                var rng = new Random();
+                if (!(rng.NextDouble() < 0.05d))
+                {
+                    continue;
+                }
+
+                var allScheduledMessages = await _messageSchedule.GetAllScheduledMessages();
+                allScheduledMessages.Sort((x, y) =>
+                x.Time > y.Time
+                    ? 1
+                    : x.Time < y.Time
+                        ? -1
+                        : 0
+                    );
+
                 var dateTime = _dateTimeGenerator.GenerateRandomDateTimeWithinRange(
-                new DateTimeRange(MessageSchedule.First().Time, MessageSchedule.Last().Time));
+                new DateTimeRange(allScheduledMessages.First().Time, allScheduledMessages.Last().Time));
 
                 var message = new ScheduledMessage(MessageType.SPECIAL, chatId, dateTime);
-                MessageSchedule.Add(message);
+                await _messageSchedule.AddScheduledMessage(message);
             }
         }
 
         private async Task ScheduleStandardMessages()
         {
-            var now = DateTime.Now;
-
-            var partOfDay = now.PartOfDay();
+            var partOfDay = DateTime.Now.PartOfDay();
 
             var users = await _userStorage.GetAllUsersForScheduledMessages();
 
             var scheduledCount = 0;
             foreach (var chatId in users.Select(x => x.ChatId))
             {
-                // for current part
-                var currentStart = now;
-                var currentEnd = now.Date + partOfDay.End;
-                var restTimeRange = new DateTimeRange(currentStart, currentEnd);
+                scheduledCount =+ await ScheduleForCurrentPart(partOfDay, chatId);
 
-                if (restTimeRange.Difference <= TimeSpan.FromHours(_appSettings.ThresholdInHours))
-                {
-                    var dateTimes = _dateTimeGenerator.GenerateDateTimesWithinRange(restTimeRange, messageCount: 1);
-
-                    var messages = dateTimes.Select(dateTime => new ScheduledMessage(MessageType.PLAIN, chatId, dateTime));
-
-                    MessageSchedule.AddRange(messages);
-                    scheduledCount += messages.Count();
-                }
-                else
-                {
-                    var dateTimes = _dateTimeGenerator.GenerateDateTimesWithinRange(restTimeRange, MessageCounts[partOfDay]);
-
-                    var messages = dateTimes.Select(dateTime => new ScheduledMessage(MessageType.PLAIN, chatId, dateTime));
-
-                    MessageSchedule.AddRange(messages);
-                    scheduledCount += messages.Count();
-                }
-
-                // for rest parts
-                foreach (var p in partOfDay.Rest)
-                {
-                    var restStart = p.Date.AddSeconds(p.Start.TotalSeconds);
-                    var restEnd = p.Date.AddSeconds(p.End.TotalSeconds);
-
-                    var range = new DateTimeRange(restStart, restEnd);
-
-                    var dateTimes = _dateTimeGenerator.GenerateDateTimesWithinRange(range, MessageCounts[p]);
-
-                    var messages = dateTimes.Select(dateTime => new ScheduledMessage(MessageType.PLAIN, chatId, dateTime));
-
-                    MessageSchedule.AddRange(messages);
-                    scheduledCount += messages.Count();
-                }
+                scheduledCount += await ScheduleForRestParts(partOfDay, chatId);
             }
 
             _logger.LogInformation($"{scheduledCount} messages were scheduled.");
-        }      
+        }
+
+        private async Task<int> ScheduleForCurrentPart(PartOfDay partOfDay, long chatId)
+        {
+            var scheduledCount = 0;
+
+            var now = DateTime.Now;
+            var currentStart = now;
+            var currentEnd = now.Date + partOfDay.End;
+            var restTimeRange = new DateTimeRange(currentStart, currentEnd);
+
+            if (restTimeRange.Difference <= TimeSpan.FromHours(_appSettings.ThresholdInHours))
+            {
+                var dateTimes = _dateTimeGenerator.GenerateDateTimesWithinRange(restTimeRange, messageCount: 1);
+
+                var messages = dateTimes.Select(dateTime => new ScheduledMessage(MessageType.PLAIN, chatId, dateTime));
+
+                await _messageSchedule.AddScheduledMessageRange(messages);
+
+                scheduledCount += messages.Count();
+            }
+            else
+            {
+                var dateTimes = _dateTimeGenerator.GenerateDateTimesWithinRange(restTimeRange, MessageCounts[partOfDay]);
+
+                var messages = dateTimes.Select(dateTime => new ScheduledMessage(MessageType.PLAIN, chatId, dateTime));
+
+                await _messageSchedule.AddScheduledMessageRange(messages);
+
+                scheduledCount += messages.Count();
+            }
+
+            return scheduledCount;
+        }
+
+        private async Task<int> ScheduleForRestParts(PartOfDay partOfDay, long chatId)
+        {
+            var scheduledCount = 0;
+
+            foreach (var p in partOfDay.Rest)
+            {
+                var restStart = p.Date.AddSeconds(p.Start.TotalSeconds);
+                var restEnd = p.Date.AddSeconds(p.End.TotalSeconds);
+
+                var range = new DateTimeRange(restStart, restEnd);
+
+                var dateTimes = _dateTimeGenerator.GenerateDateTimesWithinRange(range, MessageCounts[p]);
+
+                var messages = dateTimes.Select(dateTime => new ScheduledMessage(MessageType.PLAIN, chatId, dateTime));
+
+                await _messageSchedule.AddScheduledMessageRange(messages);
+
+                scheduledCount += messages.Count();
+            }
+
+            return scheduledCount;
+        }
     }
 }

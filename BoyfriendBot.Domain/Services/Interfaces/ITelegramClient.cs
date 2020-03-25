@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BoyfriendBot.Domain.Services
+namespace BoyfriendBot.Domain.Services.Interfaces
 {
     public interface ITelegramClient
     {
-        Task SendMessageAsync(PartOfDay partOfDay, MessageType type, long chatId);
+        Task SendMessageAsync(string category, MessageType type, long chatId);
     }
 }
