@@ -63,11 +63,11 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<ITelegramBotClientWrapper, TelegramBotClientWrapper>()
                 .AddTransient<ITelegramClient, TelegramClient>()
                 .AddTransient<IBulkMessagingTelegramClient, BulkMessagingTelegramClient>()
-                .AddTransient<IMonitoringManager, MonitoringManager>()
+                .AddSingleton<IMonitoringManager, MonitoringManager>()
                 .AddTransient<IDateTimeGenerator, DateTimeGenerator>()
                 .AddTransient<IMessageSchedule, InMemoryMessageSchedule>()
                 .AddTransient<IRarityRoller, RarityRoller>()
-                
+                .AddSingleton<IEventManager, EventManager>()
 
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)

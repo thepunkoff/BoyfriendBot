@@ -12,14 +12,17 @@ namespace BoyfriendBot.WebApp.Controllers
     {
         private readonly ILogger<BoyfriendBotController> _logger;
         private readonly IMonitoringManager _monitoringManager;
+        private readonly IEventManager _eventManager;
 
         public BoyfriendBotController(
               ILogger<BoyfriendBotController> logger
             , IMonitoringManager monitoringManager
+            , IEventManager eventManager
             )
         {
             _logger = logger;
             _monitoringManager = monitoringManager;
+            _eventManager = eventManager;
         }
 
         [HttpGet]
@@ -36,6 +39,14 @@ namespace BoyfriendBot.WebApp.Controllers
             };
 
             return View("Monitor", monitoring);
+        }
+
+        [HttpGet]
+        [Route("reschedule")]
+        public ActionResult Reschedule()
+        {
+            _eventManager.InvokeRescheduleClicked();
+            return Redirect("~/monitor");
         }
     }
 }

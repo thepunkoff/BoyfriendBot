@@ -48,6 +48,7 @@ namespace BoyfriendBot.Domain.Services
             return await _dbContext.User
                 .AsNoTracking()
                 .Include(x => x.UserSettings)
+                .Include(x => x.RarityWeights)
                 .Where(x => x.UserSettings.RecieveScheduled)
                 .ToListAsync();
         }
