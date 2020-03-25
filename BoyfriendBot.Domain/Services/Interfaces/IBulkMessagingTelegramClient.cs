@@ -8,8 +8,8 @@ namespace BoyfriendBot.Domain.Services.Interfaces
 {
     public interface IBulkMessagingTelegramClient
     {
-        Task<List<Message>> SendWakeUpMessageToAllUsersAsync(MessageType type);
-        Task<List<Message>> SendScheduledMessageToAllUsersAsync(PartOfDay partOfDay, MessageType type);
+        Task<List<Message>> SendWakeUpMessageToAllUsersAsync();
+        Task<List<Message>> SendScheduledMessageToAllUsersAsync(PartOfDay partOfDay, MessageRarity type);
 
     }
 }

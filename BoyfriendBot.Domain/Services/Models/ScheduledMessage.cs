@@ -1,22 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BoyfriendBot.Domain.Services.Models
 {
     public class ScheduledMessage
     {
-        public ScheduledMessage(MessageType type, long chatId, DateTime time)
+        public ScheduledMessage() { }
+        public ScheduledMessage(MessageType type, MessageRarity rarity, long chatId, DateTime time)
         {
-            Guid = Guid.NewGuid();
             Type = type;
+            Rarity = rarity;
             ChatId = chatId;
             Time = time;
         }
 
         public Guid Guid { get; set; }
         public MessageType Type { get; set; }
+        public MessageRarity Rarity { get; set; }
         public long ChatId { get; set; }
         public DateTime Time { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Type.ToString()} - {Rarity.ToString()} - {Time.ToString()} - {ChatId}";
+        }
     }
 }

@@ -23,7 +23,27 @@ namespace BoyfriendBot.Domain.Services
             dbos.ForEach(x => _userCache.Add(x.UserId, x.ChatId));
         }
 
-        public async Task<List<UserDbo>> GetAllUsersForScheduledMessages()
+        public async Task<UserDbo> GetUserByChatIdNoTracking(long chatId)
+        {
+            return await _dbContext.User
+                .AsNoTracking()
+                .Include(x => x.UserSettings)
+                .Include(x => x.RarityWeights)
+                .Where(x => x.ChatId == chatId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<UserDbo>> GetUserByChatIdRangeNoTracking(IEnumerable<long> chatIds)
+        {
+            return await _dbContext.User
+                .AsNoTracking()
+                .Include(x => x.UserSettings)
+                .Include(x => x.RarityWeights)
+                .Where(x => chatIds.Contains(x.ChatId))
+                .ToListAsync();
+        }
+
+        public async Task<List<UserDbo>> GetAllUsersForScheduledMessagesNoTracking()
         {
             return await _dbContext.User
                 .AsNoTracking()

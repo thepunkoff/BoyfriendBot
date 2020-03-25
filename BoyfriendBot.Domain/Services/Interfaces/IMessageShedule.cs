@@ -11,6 +11,7 @@ namespace BoyfriendBot.Domain.Services.Interfaces
         Task AddScheduledMessageRange(IEnumerable<ScheduledMessage> messages);
         Task RemoveScheduledMessage(ScheduledMessage message);
         Task RemoveAllScheduledMessages();
-        Task<List<ScheduledMessage>> GetAllScheduledMessages();
+        Task<List<ScheduledMessage>> GetCopiesOfAllScheduledMessages();
+        string ToString();
     }
 }

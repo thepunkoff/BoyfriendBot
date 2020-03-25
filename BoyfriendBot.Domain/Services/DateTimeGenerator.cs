@@ -30,8 +30,6 @@ namespace BoyfriendBot.Domain.Services
 
         public List<DateTime> GenerateDateTimesWithinRange(DateTimeRange range, int messageCount)
         {
-            _logger.LogInformation($"Generating schedule date times with the method: \"{_appSettings.DateTimeGenerationMethod}\"");
-
             List<DateTime> dateTimes = null;
             switch (_appSettings.DateTimeGenerationMethod)
             {
@@ -46,12 +44,6 @@ namespace BoyfriendBot.Domain.Services
                 default:
                     dateTimes = GenerateRandomDateTimesWithinRange(range, messageCount);
                     break;
-            }
-
-            _logger.LogInformation("Messages generated:");
-            foreach (var dt in dateTimes)
-            {
-                _logger.LogInformation($"{dt.PartOfDay().Name} - {dt}");
             }
 
             return dateTimes;

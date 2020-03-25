@@ -10,7 +10,7 @@ namespace BoyfriendBot.Domain.Infrastructure.Mapping
         {
             CreateMap<ScheduledMessage, ScheduledMessageDbo>()
             .ForMember(d => d.Guid, c => c.MapFrom(s => s.Guid.ToString()))
-            .ForMember(d => d.Type, c => c.MapFrom(s => s.Type.ToString()))
+            .ForMember(d => d.Type, c => c.MapFrom(s => s.Rarity.ToString()))
             .ForMember(d => d.ChatId, c => c.MapFrom(s => s.ChatId))
             .ForMember(d => d.Time, c => c.MapFrom(s => s.Time));
         }

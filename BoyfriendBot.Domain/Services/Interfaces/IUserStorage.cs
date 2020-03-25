@@ -11,7 +11,9 @@ namespace BoyfriendBot.Domain.Services.Interfaces
         bool TryGetChatId(long userId, out long chatId);
         bool HasUser(long userId);
 
-        Task<List<UserDbo>> GetAllUsersForScheduledMessages();
+        Task<UserDbo> GetUserByChatIdNoTracking(long chatId);
+        Task<List<UserDbo>> GetUserByChatIdRangeNoTracking(IEnumerable<long> chatIds);
+        Task<List<UserDbo>> GetAllUsersForScheduledMessagesNoTracking();
         Task AddNewUser(long userId, long chatId);
         Task AddNewUser(UserDbo userDbo);
     }

@@ -23,9 +23,9 @@ namespace BoyfriendBot.Domain.Services
             _messageTextProvider = messageTextProvider;
         }
 
-        public async Task SendMessageAsync(string category, MessageType type, long chatId)
+        public async Task SendMessageAsync(string category, MessageType type, MessageRarity rarity, long chatId)
         {
-            var message = _messageTextProvider.GetMessage(category, type);
+            var message = _messageTextProvider.GetMessage(category, type, rarity);
 
             await _telegramBotClientWrapper.Client.SendTextMessageAsync(chatId, message);
         }

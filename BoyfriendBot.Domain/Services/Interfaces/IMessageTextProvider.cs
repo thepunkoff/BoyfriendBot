@@ -5,6 +5,6 @@ namespace BoyfriendBot.Domain.Services.Interfaces
 {
     public interface IMessageTextProvider
     {
-        string GetMessage(string category, MessageType type);
+        string GetMessage(string category, MessageType type, MessageRarity rarity);
     }
 }

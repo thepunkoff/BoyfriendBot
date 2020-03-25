@@ -7,6 +7,7 @@ namespace BoyfriendBot.Domain.Core
     public class Const
     {
         public const string ErrorMessage = "Упс, произошло какая-то ошибка.";
+        public const string RedAlertMessage = "Ты мне нравишься.";
         public class PartOfDay
         {
             public const string Night = "Night";
@@ -17,9 +18,10 @@ namespace BoyfriendBot.Domain.Core
 
         public class XmlAliases
         {
+            public const string RarityAttribute = "rarity";
             public const string TypeAttribute = "type";
 
-            public const string WakeUp = "WakeUp";
+            public const string WakeUpCategory = "WakeUp";
         }
 
         public class CommandPatterns
