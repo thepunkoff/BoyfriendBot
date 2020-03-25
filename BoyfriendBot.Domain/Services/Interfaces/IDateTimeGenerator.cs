@@ -8,6 +8,6 @@ namespace BoyfriendBot.Domain.Services.Interfaces
     public interface IDateTimeGenerator
     {
         DateTime GenerateRandomDateTimeWithinRange(DateTimeRange range);
-        List<DateTime> GenerateDateTimesWithinRange(TimeSpanRange range, int messageCount);
+        List<DateTime> GenerateDateTimesWithinRange(DateTimeRange range, int messageCount);
     }
 }
