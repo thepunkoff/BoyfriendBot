@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BoyfriendBot.Domain.Services
 {
@@ -29,7 +28,7 @@ namespace BoyfriendBot.Domain.Services
             return GenerateRandomDateTimesWithinRange(range, messageCount: 1)[0];
         }
 
-        public List<DateTime> GenerateDateTimesWithinRange(TimeSpanRange range, int messageCount)
+        public List<DateTime> GenerateDateTimesWithinRange(DateTimeRange range, int messageCount)
         {
             _logger.LogInformation($"Generating schedule date times with the method: \"{_appSettings.DateTimeGenerationMethod}\"");
 
@@ -57,27 +56,6 @@ namespace BoyfriendBot.Domain.Services
 
             return dateTimes;
         }
-        private List<DateTime> GenerateRandomDateTimesWithinRange(TimeSpanRange schedulingRange, int messageCount)
-        {
-            var dateTimes = new List<DateTime>();
-
-            var rng = new Random();
-
-            var schedulingDay = GetSchedulingDay(schedulingRange);
-
-            for (int i = 0; i < messageCount; i++)
-            {
-                var maxSeconds = (int)schedulingRange.Difference.TotalSeconds;
-
-                var randomDateTime = schedulingDay.Add(schedulingRange.Start).AddSeconds(rng.Next(maxSeconds));
-                dateTimes.Add(randomDateTime);
-            }
-
-            dateTimes.Sort();
-
-            return dateTimes;
-        }
-
         private List<DateTime> GenerateRandomDateTimesWithinRange(DateTimeRange schedulingRange, int messageCount)
         {
             var dateTimes = new List<DateTime>();
@@ -89,7 +67,6 @@ namespace BoyfriendBot.Domain.Services
                 var maxSeconds = (int)schedulingRange.Difference.TotalSeconds;
 
                 var randomDateTime = schedulingRange.Start.AddSeconds(rng.Next(maxSeconds));
-
                 dateTimes.Add(randomDateTime);
             }
 
@@ -98,9 +75,9 @@ namespace BoyfriendBot.Domain.Services
             return dateTimes;
         }
 
-        private List<DateTime> GenerateSmartDateTimesWithinRange(TimeSpanRange schedulingRange, int messageCount)
+        private List<DateTime> GenerateSmartDateTimesWithinRange(DateTimeRange schedulingRange, int messageCount)
         {
-            var schedulingDay = GetSchedulingDay(schedulingRange);
+            var schedulingDay = schedulingRange.Start.Date;
 
             var dateTimes = new List<DateTime>();
 
@@ -109,7 +86,7 @@ namespace BoyfriendBot.Domain.Services
             var step = schedulingRange.Difference.TotalSeconds / messageCount;
             var randomSecondsBias = biasRng.NextDouble() * step;
 
-            for (double seconds = schedulingRange.Start.TotalSeconds; seconds < schedulingRange.End.TotalSeconds; seconds += step)
+            for (int i = 0; i < messageCount; i++)
             {
                 var noiseRng = new Random();
                 var noiseValue = step / _appSettings.StepToNoiseRatio;
@@ -117,6 +94,7 @@ namespace BoyfriendBot.Domain.Services
                 var noiseRangeEnd = noiseValue;
                 var randomSecondsNoise = noiseRng.NextDouble() * (noiseRangeEnd - noiseRangeStart) + noiseRangeStart;
 
+                var seconds = schedulingRange.Start.TimeOfDay.TotalSeconds + (step * i);
                 // actually modulo needed just in case noise overflows maxvalue
                 var dateTime = schedulingDay.AddSeconds(seconds + ((randomSecondsBias + randomSecondsNoise) % schedulingRange.Difference.TotalSeconds));
 
@@ -126,20 +104,6 @@ namespace BoyfriendBot.Domain.Services
             dateTimes.Sort();
 
             return dateTimes;
-        }
-
-        private DateTime GetSchedulingDay(TimeSpanRange schedulingRange)
-        {
-            var schedulingPartOfDay = DateTime.MinValue.Add(schedulingRange.Start).PartOfDay(); // choose any date with any time within the range to determine ToD
-
-            if (schedulingPartOfDay.Name == Const.PartOfDay.Night)
-            {
-                return DateTime.Now.Date.AddDays(1);
-            }
-            else
-            {
-                return DateTime.Now.Date;
-            }
         }
     }
 }

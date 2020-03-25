@@ -15,6 +15,7 @@ namespace BoyfriendBot.Domain.Core
         };
 
         public string Name { get; set; }
+        public DateTime Date { get; set; }
 
         public TimeSpan Start => _ranges[this].Start;
         public TimeSpan End => _ranges[this].End;
@@ -31,13 +32,33 @@ namespace BoyfriendBot.Domain.Core
         {
             get
             {
-                if (Name == Const.PartOfDay.Night) return Morning;
+                if (this == Night)
+                {
+                    var morning = Morning;
+                    morning.Date = Date;
+                    return morning;
+                }
 
-                else if (Name == Const.PartOfDay.Morning) return Afternoon;
+                else if (this == Morning)
+                {
+                    var afternoon = Afternoon;
+                    afternoon.Date = Date;
+                    return afternoon;
+                }
 
-                else if (Name == Const.PartOfDay.Afternoon) return Evening;
+                else if (this == Afternoon)
+                {
+                    var evening = Evening;
+                    evening.Date = Date;
+                    return evening;
+                }
 
-                else return Night;
+                else
+                {
+                    var night = Night;
+                    night.Date = Date.AddDays(1);
+                    return night;
+                }
             }
         }
 
@@ -49,25 +70,7 @@ namespace BoyfriendBot.Domain.Core
 
                 var p = this;
 
-                while (p != Night)
-                {
-                    p = p.Next;
-                    list.Add(p);
-                }
-
-                return list;
-            }
-        }
-
-        public List<PartOfDay> Past
-        {
-            get
-            {
-                var list = new List<PartOfDay>();
-
-                var p = Evening;
-
-                while (p != this)
+                while (p != Evening)
                 {
                     p = p.Next;
                     list.Add(p);
@@ -85,7 +88,7 @@ namespace BoyfriendBot.Domain.Core
             {
                 if (_ranges[range.Key].Includes(timeOfDay))
                 {
-                    return new PartOfDay { Name = range.Key.Name };
+                    return new PartOfDay { Name = range.Key.Name, Date = dateTime.Date };
                 }
             }
 
