@@ -14,6 +14,21 @@ namespace BoyfriendBot.Domain.Core
             public const string Morning = "Morning";
             public const string Afternoon = "Afternoon";
             public const string Evening = "Evening";
+
+            public static Dictionary<Core.PartOfDay, List<(string Type, TimeSpanRange Range)>> SpecialMessageTypes { get; } = new Dictionary<Core.PartOfDay, List<(string, TimeSpanRange)>>
+            {
+                [Core.PartOfDay.Night] = new List<(string, TimeSpanRange)> { (null, default) },
+                [Core.PartOfDay.Morning] = new List<(string, TimeSpanRange)> {
+                    (XmlAliases.GoodMorningType, new TimeSpanRange(new TimeSpan(8, 0, 0), new TimeSpan(12, 0, 0)))
+                },
+                [Core.PartOfDay.Afternoon] = new List<(string, TimeSpanRange)> {
+                    (XmlAliases.LunchType, new TimeSpanRange(new TimeSpan(14, 0, 0), new TimeSpan(16, 0, 0)))
+                },
+                [Core.PartOfDay.Evening] = new List<(string, TimeSpanRange)> {
+                    (XmlAliases.DinnerType, new TimeSpanRange(new TimeSpan(19, 0, 0), new TimeSpan(21, 0, 0))),
+                    (XmlAliases.GoodNightType, new TimeSpanRange(new TimeSpan(22, 0, 0), new TimeSpan(23, 59, 59))),
+                }
+            };
         }
 
         public class XmlAliases
@@ -22,6 +37,11 @@ namespace BoyfriendBot.Domain.Core
             public const string TypeAttribute = "type";
 
             public const string WakeUpCategory = "WakeUp";
+
+            public const string GoodMorningType = "goodMorning";
+            public const string LunchType = "lunch";
+            public const string DinnerType = "dinner";
+            public const string GoodNightType = "goodNight";
         }
 
         public class CommandPatterns

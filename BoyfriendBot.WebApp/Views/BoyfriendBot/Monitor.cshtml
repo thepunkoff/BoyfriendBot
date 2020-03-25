@@ -1,4 +1,6 @@
 ﻿@model BoyfriendBot.WebApp.Models.MonitorViewModel
+@using BoyfriendBot.WebApp.Controllers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 
 <h1>BoyfriendBot v.0.0.1</h1>
@@ -23,3 +25,5 @@
 <p>Total users registered: @Model.TotalUsers</p>
 
 <button onClick="window.location.reload();">Refresh</button>
+<br>
+<a asp-controller="BoyfriendBot" asp-action="Reschedule">click to reschedule messages</a>

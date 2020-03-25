@@ -30,26 +30,9 @@ namespace BoyfriendBot.Domain.Services
 
         private List<ScheduledMessage> _scheduledMesageCache { get; set; }
 
-        public async Task<List<ScheduledMessage>> GetCopiesOfAllScheduledMessages()
+        public async Task<List<ScheduledMessage>> GetAllScheduledMessages()
         {
-            return GetCachedMessages();
-        }
-
-        private List<ScheduledMessage> GetCachedMessages()
-        {
-            var messages = new List<ScheduledMessage>();
-
-            messages.AddRange(_scheduledMesageCache);
-
-            messages.Sort((x, y) =>
-                x.Time > y.Time
-                    ? 1
-                    : x.Time < y.Time
-                        ? -1
-                        : 0
-                    );
-
-            return messages;
+            return _scheduledMesageCache;
         }
 
         public async Task AddScheduledMessage(ScheduledMessage message)
@@ -79,7 +62,7 @@ namespace BoyfriendBot.Domain.Services
         {
             var sb = new StringBuilder();
 
-            foreach (var message in GetCachedMessages())
+            foreach (var message in _scheduledMesageCache)
             {
                 sb.AppendLine(message.ToString());
             }

@@ -27,6 +27,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly ListeningServiceAppSettings _appSettings;
         private readonly IMonitoringManager _monitoringManager;
         private readonly IMapper _mapper;
+        private readonly IEventManager _eventManager;
 
         public ListeningService(
               ITelegramBotClientWrapper telegramClientWrapper
@@ -37,6 +38,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             , IOptions<ListeningServiceAppSettings> appSettings
             , IMonitoringManager monitoringManager
             , IMapper mapper
+            , IEventManager eventManager
             )
         {
             _botClient = telegramClientWrapper.Client;
@@ -47,6 +49,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _appSettings = appSettings.Value;
             _monitoringManager = monitoringManager;
             _mapper = mapper;
+            _eventManager = eventManager;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -56,13 +59,13 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 return;
             }
 
-            _logger.LogInformation("Started");
-
             _botClient.OnMessage += OnMessage;
 
             _botClient.StartReceiving();
 
             _monitoringManager.Listening = true;
+
+            _logger.LogInformation("Started");
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -86,6 +89,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 var mappedUser = _mapper.Map<UserDbo>(message);
 
                 await _userStorage.AddNewUser(mappedUser);
+
+                _eventManager.InvokeNewUser(mappedUser);
             }
 
             if (message.Text.StartsWith("/"))
