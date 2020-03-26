@@ -21,7 +21,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
     {
         private readonly TelegramBotClient _botClient;
         private readonly ILogger<ListeningService> _logger;
-        private readonly IBoyfriendBotDbContext _dbContext;
+        private readonly IBoyfriendBotDbContextFactory _dbContextFactory;
         private readonly ICommandProcessor _commandProcessor;
         private readonly IUserStorage _userStorage;
         private readonly ListeningServiceAppSettings _appSettings;
@@ -32,7 +32,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         public ListeningService(
               ITelegramBotClientWrapper telegramClientWrapper
             , ILogger<ListeningService> logger
-            , IBoyfriendBotDbContext dbContext
+            , IBoyfriendBotDbContextFactory dbContextFactory
             , ICommandProcessor commandProcessor
             , IUserStorage userCache
             , IOptions<ListeningServiceAppSettings> appSettings
@@ -43,7 +43,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         {
             _botClient = telegramClientWrapper.Client;
             _logger = logger;
-            _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
             _commandProcessor = commandProcessor;
             _userStorage = userCache;
             _appSettings = appSettings.Value;

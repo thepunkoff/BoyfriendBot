@@ -10,11 +10,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Telegram.Bot;
 
 namespace BoyfriendBot.Domain.Services.Hosted
 {
@@ -30,6 +28,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly IMessageSchedule _messageSchedule;
         private readonly IRarityRoller _rarityRoller;
         private readonly IEventManager _eventManager;
+        private CancellationTokenSource _cts;
 
         private Dictionary<PartOfDay, int> MessageCounts { get; set; }
 
@@ -57,6 +56,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _rarityRoller = rarityRoller;
             _eventManager = eventManager;
 
+            _cts = new CancellationTokenSource();
+
             _logger.LogInformation("Initializing scheduled messaging service...");
 
             // get message count from personal settings
@@ -78,57 +79,78 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             if (_appSettings.WakeUpMessageOn)
             {
-                SendWakeUpMessage();
+                SendWakeUpMessage(cancellationToken);
             }
 
             _eventManager.NewUserEvent += OnNewUser;
             _eventManager.RescheduleClickedEvent += OnRescheduleClicked;
 
-            await RescheduleMessages();
+            await RescheduleMessages(cancellationToken);
 
             _logger.LogInformation("Started");
 
-            var task = Task.Run(Run);
+            var task = Task.Run(() => Run(_cts.Token));
 
             return;
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
+            _cts.Cancel();
+
+            _eventManager.NewUserEvent -= OnNewUser;
+            _eventManager.RescheduleClickedEvent -= OnRescheduleClicked;
+
             _monitoringManager.SchedulingMessages = false;
 
             _logger.LogInformation("Stopped");
         }
-        private async void SendWakeUpMessage()
+
+        private async void SendWakeUpMessage(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             var rng = new Random();
             if (!(rng.NextDouble() < 0.05d))
             {
-                await _bulkMessagingTelegramClient.SendWakeUpMessageToAllUsersAsync();
+                await _bulkMessagingTelegramClient.SendWakeUpMessageToAllUsersAsync(cancellationToken);
             }
             else
             {
-                await _bulkMessagingTelegramClient.SendWakeUpMessageToAllUsersAsync();
+                await _bulkMessagingTelegramClient.SendWakeUpMessageToAllUsersAsync(cancellationToken);
             }
         }
 
-        public async Task Run()
+        public async Task Run(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             try
             {
                 _monitoringManager.SchedulingMessages = true;
 
                 var dayBorder = DateTime.Now.Date.AddDays(1);
-                while (true)
+                while (!cancellationToken.IsCancellationRequested)
                 {
                     if (DateTime.Now > dayBorder)
                     {
-                        await RescheduleMessages();
+                        await RescheduleMessages(cancellationToken);
 
                         dayBorder = DateTime.Now.Date.AddDays(1);
                     }
 
-                    await SendMessagesAsync();
+                    await SendMessagesAsync(cancellationToken);
                 }
             }
             catch (Exception ex)
@@ -138,9 +160,14 @@ namespace BoyfriendBot.Domain.Services.Hosted
             }
         }
 
-        private async Task SendMessagesAsync()
+        private async Task SendMessagesAsync(CancellationToken cancellationToken)
         {
-            foreach (var message in await _messageSchedule.GetAllScheduledMessages())
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
+            foreach (var message in await _messageSchedule.GetAllScheduledMessages(cancellationToken))
             {
                 var now = DateTime.Now;
 
@@ -154,19 +181,22 @@ namespace BoyfriendBot.Domain.Services.Hosted
                         $"Type: {message.Type}," +
                         $"Rarity: {message.Rarity}.");
 
-                    await _messageSchedule.RemoveScheduledMessage(message);
+                    await _messageSchedule.RemoveScheduledMessage(message, cancellationToken);
                 }
             }
         }
 
-        private async Task ScheduleSpecialMessages()
+        private async Task ScheduleSpecialMessages(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             var partsOfDay = new List<PartOfDay>();
 
             var now = DateTime.Now;
             var partOfDay = now.PartOfDay();
-            var currentStart = now;
-            var currentEnd = now.Date + partOfDay.End;
 
             partsOfDay.Add(partOfDay);
             partsOfDay.AddRange(partOfDay.Rest);
@@ -197,7 +227,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                             Time = _dateTimeGenerator.GenerateRandomDateTimeWithinRange(new DateTimeRange(start, end)),
                         };
 
-                        await _messageSchedule.AddScheduledMessage(message);
+                        await _messageSchedule.AddScheduledMessage(message, cancellationToken);
 
                         scheduledCount++;
                     }
@@ -207,8 +237,13 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _logger.LogInformation($"{scheduledCount} special messages were scheduled.");
         }
 
-        private async Task ScheduleStandardMessages()
+        private async Task ScheduleStandardMessages(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             var now = DateTime.Now;
 
             var partsOfDay = new List<PartOfDay>();
@@ -251,7 +286,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                         Time = dateTime
                     });
 
-                    await _messageSchedule.AddScheduledMessageRange(messages);
+                    await _messageSchedule.AddScheduledMessageRange(messages, cancellationToken);
 
                     scheduledCount += messages.Count();
                 }
@@ -260,39 +295,22 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _logger.LogInformation($"{scheduledCount} standard messages were scheduled.");
         }
 
-        private async Task RollRarities(IEnumerable<ScheduledMessage> messages)
+        private async Task RescheduleMessages(CancellationToken cancellationToken)
         {
-            var userDbos = await _userStorage.GetUserByChatIdRangeNoTracking(messages.Select(x => x.ChatId));
-
-            foreach (var message in messages)
+            if (cancellationToken.IsCancellationRequested)
             {
-                var user = userDbos.Where(x => x.ChatId == message.ChatId).FirstOrDefault();
-                message.Rarity = _rarityRoller.RollRarityForUser(user);
+                return;
             }
-        }
 
-        #region EventHandlers
-        private async void OnNewUser(object sender, UserDbo e)
-        {
-            await RescheduleMessages();
-        }
-
-        private async void OnRescheduleClicked(object sender, EventArgs e)
-        {
-            await RescheduleMessages();
-        }
-
-        private async Task RescheduleMessages()
-        {
             _logger.LogInformation("Scheduling new messages...");
 
-            await _messageSchedule.RemoveAllScheduledMessages();
+            await _messageSchedule.RemoveAllScheduledMessages(cancellationToken);
 
-            await ScheduleStandardMessages();
+            await ScheduleStandardMessages(cancellationToken);
 
-            await ScheduleSpecialMessages();
+            await ScheduleSpecialMessages(cancellationToken);
 
-            var messages = await _messageSchedule.GetAllScheduledMessages();
+            var messages = await _messageSchedule.GetAllScheduledMessages(cancellationToken);
 
             messages.Sort((x, y) =>
                 x.Time > y.Time
@@ -303,6 +321,21 @@ namespace BoyfriendBot.Domain.Services.Hosted
                     );
 
             _logger.LogInformation(_messageSchedule.ToString());
+        }
+
+        #region EventHandlers
+        private async void OnNewUser(object sender, UserDbo e)
+        {
+            await StopAsync(default);
+
+            await StartAsync(default);
+        }
+
+        private async void OnRescheduleClicked(object sender, EventArgs e)
+        {
+            await StopAsync(default);
+
+            await StartAsync(default);
         }
         #endregion
     }

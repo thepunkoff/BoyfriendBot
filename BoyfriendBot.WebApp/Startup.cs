@@ -71,6 +71,7 @@ namespace BoyfriendBot.WebApp
 
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)
+                .AddTransient<IBoyfriendBotDbContextFactory, BoyfriendBotDbContextFactory>()
 
                 // Commands
                 .AddTransient<ICommandProcessor, CommandProcessor>()
