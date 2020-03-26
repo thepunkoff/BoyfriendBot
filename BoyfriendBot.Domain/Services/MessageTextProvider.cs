@@ -45,7 +45,7 @@ namespace BoyfriendBot.Domain.Services
 
             if (messages.Count == 0)
             {
-                _logger.LogWarning($"Couldn't find any message for query. Category: {xCategory}, Type: {typeString}, Rarity: {rarityString}");
+                _logger.LogWarning($"Couldn't find any message for query. Category: {xCategory.Name}, Type: {typeString}, Rarity: {rarityString}");
                 return Const.RedAlertMessage;
             }
 
