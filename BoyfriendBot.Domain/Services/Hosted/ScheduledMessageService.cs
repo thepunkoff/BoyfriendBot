@@ -167,21 +167,23 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 return;
             }
 
-            foreach (var message in await _messageSchedule.GetAllScheduledMessages(cancellationToken))
+            foreach (var messageTime in await _messageSchedule.GetAllScheduledMessageTimes(cancellationToken))
             {
                 var now = DateTime.Now;
 
-                if (now >= message.Time)
+                if (now >= messageTime)
                 {
-                    await _telegramClient.SendMessageAsync(message.Time.PartOfDay().Name, message.Type, message.Rarity, message.ChatId);
+                    var message = await _messageSchedule.GetScheduledMessage(messageTime, cancellationToken);
 
-                    _logger.LogInformation($"Scheduled message sent." +
-                        $"ChatId: {message.ChatId}," +
-                        $"Category: {message.Time.PartOfDay().Name}," +
-                        $"Type: {message.Type}," +
+                    await _telegramClient.SendMessageAsync(messageTime.PartOfDay().Name, message.Type, message.Rarity, message.ChatId);
+
+                    _logger.LogInformation($"Message sent. " +
+                        $"ChatId: {message.ChatId}, " +
+                        $"Category: {message.Time.PartOfDay().Name}, " +
+                        $"Type: {message.Type}, " +
                         $"Rarity: {message.Rarity}.");
 
-                    await _messageSchedule.RemoveScheduledMessage(message, cancellationToken);
+                    await _messageSchedule.RemoveScheduledMessage(messageTime, cancellationToken);
                 }
             }
         }
@@ -309,16 +311,6 @@ namespace BoyfriendBot.Domain.Services.Hosted
             await ScheduleStandardMessages(cancellationToken);
 
             await ScheduleSpecialMessages(cancellationToken);
-
-            var messages = await _messageSchedule.GetAllScheduledMessages(cancellationToken);
-
-            messages.Sort((x, y) =>
-                x.Time > y.Time
-                    ? 1
-                    : x.Time < y.Time
-                        ? -1
-                        : 0
-                    );
 
             _logger.LogInformation(_messageSchedule.ToString());
         }

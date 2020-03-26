@@ -1,9 +1,6 @@
 ﻿using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Services.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace BoyfriendBot.Domain.Services
 {

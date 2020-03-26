@@ -18,27 +18,36 @@ namespace BoyfriendBot.Domain.Services
     // may contain bugs, legacy class
     public class InMemoryMessageSchedule : IMessageSchedule
     {
-        private readonly ILogger<DoubleMessageSchedule> _logger;
+        private readonly ILogger<InMemoryMessageSchedule> _logger;
+        private Dictionary<DateTime, ScheduledMessage> _scheduledMesageCache { get; set; }
 
         public InMemoryMessageSchedule(
-            ILogger<DoubleMessageSchedule> logger
+            ILogger<InMemoryMessageSchedule> logger
             , IMapper mapper
             )
         {
             _logger = logger;
-            _scheduledMesageCache = new List<ScheduledMessage>();
+            _scheduledMesageCache = new Dictionary<DateTime, ScheduledMessage>();
         }
 
-        private List<ScheduledMessage> _scheduledMesageCache { get; set; }
-
-        public async Task<List<ScheduledMessage>> GetAllScheduledMessages(CancellationToken cancellationToken)
+        public async Task<List<DateTime>> GetAllScheduledMessageTimes(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 return null;
             }
 
-            return _scheduledMesageCache;
+            return _scheduledMesageCache.Keys.ToList();
+        }
+
+        public async Task<ScheduledMessage> GetScheduledMessage(DateTime dateTime, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return null;
+            }
+
+            return _scheduledMesageCache[dateTime];
         }
 
         public async Task AddScheduledMessage(ScheduledMessage message, CancellationToken cancellationToken)
@@ -48,7 +57,7 @@ namespace BoyfriendBot.Domain.Services
                 return;
             }
 
-            _scheduledMesageCache.Add(message);
+            _scheduledMesageCache.Add(message.Time, message);
         }
 
         public async Task AddScheduledMessageRange(IEnumerable<ScheduledMessage> messages, CancellationToken cancellationToken)
@@ -64,14 +73,14 @@ namespace BoyfriendBot.Domain.Services
             }
         }
 
-        public async Task RemoveScheduledMessage(ScheduledMessage message, CancellationToken cancellationToken)
+        public async Task RemoveScheduledMessage(DateTime dateTime, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 return;
             }
 
-            _scheduledMesageCache.Remove(message);
+            _scheduledMesageCache.Remove(dateTime);
         }
 
         public async Task RemoveAllScheduledMessages(CancellationToken cancellationToken)
@@ -88,7 +97,17 @@ namespace BoyfriendBot.Domain.Services
         {
             var sb = new StringBuilder();
 
-            foreach (var message in _scheduledMesageCache)
+            var messages = _scheduledMesageCache.Values.ToList();
+            
+            messages.Sort((x, y) =>
+                x.Time > y.Time
+                    ? 1
+                    : x.Time < y.Time
+                        ? -1
+                        : 0
+                    );
+
+            foreach (var message in messages)
             {
                 sb.AppendLine(message.ToString());
             }
