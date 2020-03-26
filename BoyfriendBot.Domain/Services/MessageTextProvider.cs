@@ -5,10 +5,8 @@ using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
 namespace BoyfriendBot.Domain.Services
@@ -46,7 +44,7 @@ namespace BoyfriendBot.Domain.Services
             if (messages.Count == 0)
             {
                 _logger.LogWarning($"Couldn't find any message for query. Category: {xCategory.Name}, Type: {typeString}, Rarity: {rarityString}");
-                return Const.RedAlertMessage;
+                return null;
             }
 
             var rng = new Random();
