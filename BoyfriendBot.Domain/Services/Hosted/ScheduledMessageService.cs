@@ -177,11 +177,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
                     await _telegramClient.SendMessageAsync(messageTime.PartOfDay().Name, message.Type, message.Rarity, message.ChatId);
 
-                    _logger.LogInformation($"Message sent. " +
-                        $"ChatId: {message.ChatId}, " +
-                        $"Category: {message.Time.PartOfDay().Name}, " +
-                        $"Type: {message.Type}, " +
-                        $"Rarity: {message.Rarity}.");
+                    
 
                     await _messageSchedule.RemoveScheduledMessage(messageTime, cancellationToken);
                 }
