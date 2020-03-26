@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BoyfriendBot.Domain.Services
@@ -30,31 +31,56 @@ namespace BoyfriendBot.Domain.Services
 
         private List<ScheduledMessage> _scheduledMesageCache { get; set; }
 
-        public async Task<List<ScheduledMessage>> GetAllScheduledMessages()
+        public async Task<List<ScheduledMessage>> GetAllScheduledMessages(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return null;
+            }
+
             return _scheduledMesageCache;
         }
 
-        public async Task AddScheduledMessage(ScheduledMessage message)
+        public async Task AddScheduledMessage(ScheduledMessage message, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             _scheduledMesageCache.Add(message);
         }
 
-        public async Task AddScheduledMessageRange(IEnumerable<ScheduledMessage> messages)
+        public async Task AddScheduledMessageRange(IEnumerable<ScheduledMessage> messages, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             foreach (var message in messages)
             {
-                await AddScheduledMessage(message);
+                await AddScheduledMessage(message, cancellationToken);
             }
         }
 
-        public async Task RemoveScheduledMessage(ScheduledMessage message)
+        public async Task RemoveScheduledMessage(ScheduledMessage message, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             _scheduledMesageCache.Remove(message);
         }
 
-        public async Task RemoveAllScheduledMessages()
+        public async Task RemoveAllScheduledMessages(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             _scheduledMesageCache.Clear();
         }
 

@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
-using BoyfriendBot.Domain.Core;
 using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BoyfriendBot.Domain.Services
@@ -18,32 +15,37 @@ namespace BoyfriendBot.Domain.Services
     public class DoubleMessageSchedule : IMessageSchedule
     {
         private readonly ILogger<DoubleMessageSchedule> _logger;
-        private readonly IBoyfriendBotDbContext _dbContext;
+        private readonly IBoyfriendBotDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;
 
         public DoubleMessageSchedule(
             ILogger<DoubleMessageSchedule> logger
-            , IBoyfriendBotDbContext dbContext
+            , IBoyfriendBotDbContextFactory dbContextFactory
             , IMapper mapper
             )
         {
             _logger = logger;
-            _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
             _mapper = mapper;
             _scheduledMesageCache = new List<ScheduledMessage>();
         }
 
         private List<ScheduledMessage> _scheduledMesageCache { get; set; }
 
-        public async Task<List<ScheduledMessage>> GetAllScheduledMessages()
+        public async Task<List<ScheduledMessage>> GetAllScheduledMessages(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return null;
+            }
+
             if (_scheduledMesageCache.Count != 0)
             {
                 return GetCachedMessages();
             }
             else
             {
-                await Cache();
+                await Cache(cancellationToken);
 
                 return GetCachedMessages();
             }
@@ -58,50 +60,88 @@ namespace BoyfriendBot.Domain.Services
             return messages;
         }
 
-        public async Task AddScheduledMessage(ScheduledMessage message)
+        public async Task AddScheduledMessage(ScheduledMessage message, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             _scheduledMesageCache.Add(message);
 
             var messageDbo = _mapper.Map<ScheduledMessageDbo>(message);
 
-            _dbContext.MessageSchedule.Add(messageDbo);
-
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task AddScheduledMessageRange(IEnumerable<ScheduledMessage> messages)
-        {
-            foreach (var message in messages)
+            using (var context = _dbContextFactory.Create())
             {
-                await AddScheduledMessage(message);
+                context.MessageSchedule.Add(messageDbo);
+
+                await context.SaveChangesAsync();
             }
         }
 
-        public async Task RemoveScheduledMessage(ScheduledMessage message)
+        public async Task AddScheduledMessageRange(IEnumerable<ScheduledMessage> messages, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
+            foreach (var message in messages)
+            {
+                await AddScheduledMessage(message, cancellationToken);
+            }
+        }
+
+        public async Task RemoveScheduledMessage(ScheduledMessage message, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             _scheduledMesageCache.Remove(message);
 
             var messageDbo = _mapper.Map<ScheduledMessageDbo>(message);
 
-            _dbContext.MessageSchedule.Remove(messageDbo);
+            using (var context = _dbContextFactory.Create())
+            {
+                context.MessageSchedule.Add(messageDbo);
 
-            await _dbContext.SaveChangesAsync();
+                await context.SaveChangesAsync();
+            }
         }
 
-        public async Task RemoveAllScheduledMessages()
+        public async Task RemoveAllScheduledMessages(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             _scheduledMesageCache.Clear();
 
-            _dbContext.MessageSchedule.FromSqlRaw("delete from \"MessageSchedule\"");
+            using (var context = _dbContextFactory.Create())
+            {
+                context.MessageSchedule.FromSqlRaw("delete from \"MessageSchedule\"");
 
-            await _dbContext.SaveChangesAsync();
+                await context.SaveChangesAsync(cancellationToken);
+            }
         }
 
-        private async Task Cache()
+        private async Task Cache(CancellationToken cancellationToken)
         {
-            var messageDbos = await _dbContext.MessageSchedule.ToListAsync();
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
 
-            var messages = _mapper.Map<List<ScheduledMessage>>(messageDbos);
+            List<ScheduledMessage> messages = null;
+            using (var context = _dbContextFactory.Create())
+            {
+                var messageDbos = await context.MessageSchedule.ToListAsync(cancellationToken);
+
+                messages = _mapper.Map<List<ScheduledMessage>>(messageDbos);
+            }
 
             _scheduledMesageCache.AddRange(messages);
         }

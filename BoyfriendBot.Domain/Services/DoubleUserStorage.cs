@@ -11,46 +11,59 @@ namespace BoyfriendBot.Domain.Services
 {
     public class DoubleUserStorage : IUserStorage
     {
-        private readonly IBoyfriendBotDbContext _dbContext;
+        private readonly IBoyfriendBotDbContextFactory _dbContextFactory;
         private Dictionary<long, long> _userCache = new Dictionary<long, long>();
 
-        public DoubleUserStorage(IBoyfriendBotDbContext dbContext)
+        public DoubleUserStorage(IBoyfriendBotDbContextFactory dbContextFactory)
         {
-            _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
 
-            var dbos = _dbContext.User.ToList();
+            using (var context = _dbContextFactory.Create())
+            {
+                var dbos = context.User.ToList();
 
-            dbos.ForEach(x => _userCache.Add(x.UserId, x.ChatId));
+                dbos.ForEach(x => _userCache.Add(x.UserId, x.ChatId));
+            }
+            
         }
 
         public async Task<UserDbo> GetUserByChatIdNoTracking(long chatId)
         {
-            return await _dbContext.User
+            using (var context = _dbContextFactory.Create())
+            {
+                return await context.User
                 .AsNoTracking()
                 .Include(x => x.UserSettings)
                 .Include(x => x.RarityWeights)
                 .Where(x => x.ChatId == chatId)
                 .FirstOrDefaultAsync();
+            }
         }
 
         public async Task<List<UserDbo>> GetUserByChatIdRangeNoTracking(IEnumerable<long> chatIds)
         {
-            return await _dbContext.User
+            using (var context = _dbContextFactory.Create())
+            {
+                return await context.User
                 .AsNoTracking()
                 .Include(x => x.UserSettings)
                 .Include(x => x.RarityWeights)
                 .Where(x => chatIds.Contains(x.ChatId))
                 .ToListAsync();
+            }
         }
 
         public async Task<List<UserDbo>> GetAllUsersForScheduledMessagesNoTracking()
         {
-            return await _dbContext.User
+            using (var context = _dbContextFactory.Create())
+            {
+                return await context.User
                 .AsNoTracking()
                 .Include(x => x.UserSettings)
                 .Include(x => x.RarityWeights)
                 .Where(x => x.UserSettings.RecieveScheduled)
                 .ToListAsync();
+            }
         }
 
         public bool TryGetChatId(long userId, out long chatId)
@@ -75,18 +88,24 @@ namespace BoyfriendBot.Domain.Services
                 ChatId = chatId
             };
 
-            _dbContext.User.Add(userDbo);
+            using (var context = _dbContextFactory.Create())
+            {
+                context.User.Add(userDbo);
 
-            await _dbContext.SaveChangesAsync();
+                await context.SaveChangesAsync();
+            }
         }
 
         public async Task AddNewUser(UserDbo userDbo)
         {
             _userCache.Add(userDbo.UserId, userDbo.ChatId);
 
-            _dbContext.User.Add(userDbo);
+            using (var context = _dbContextFactory.Create())
+            {
+                context.User.Add(userDbo);
 
-            await _dbContext.SaveChangesAsync();
+                await context.SaveChangesAsync();
+            }
         }
     }
 }
