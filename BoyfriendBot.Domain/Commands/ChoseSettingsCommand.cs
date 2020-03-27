@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.ReplyMarkups;
 using Microsoft.Extensions.DependencyInjection;
+using Telegram.Bot;
+using BoyfriendBot.Domain.Services.Hosted.Interfaces;
+using Telegram.Bot.Types.Enums;
 
 namespace BoyfriendBot.Domain.Commands
 {
@@ -13,7 +16,7 @@ namespace BoyfriendBot.Domain.Commands
     {
         private readonly IUserStorage _userStorage;
         private readonly ILogger<ChoseSettingsCommand> _logger;
-        private readonly ITelegramBotClientWrapper _botClient;
+        private readonly TelegramBotClient _botClient;
         private readonly IServiceProvider _serviceProvider;
 
         public ChoseSettingsCommand(
@@ -25,7 +28,7 @@ namespace BoyfriendBot.Domain.Commands
         {
             _userStorage = userStorage;
             _logger = logger;
-            _botClient = botClient;
+            _botClient = botClient.Client;
             _serviceProvider = serviceProvider;
         }
 
@@ -35,9 +38,14 @@ namespace BoyfriendBot.Domain.Commands
         {
             ChatId = chatId;
 
-            _botClient.Client.OnCallbackQuery += OnCallbackQueryEventHandler;
+            _botClient.OnCallbackQuery += OnCallbackQueryEventHandler;
 
-            await _botClient.Client.SendTextMessageAsync(
+            _botClient.StartReceiving(allowedUpdates: new UpdateType[] { UpdateType.CallbackQuery });
+
+            var me = await _botClient.GetMeAsync();
+            _logger.LogInformation($"{me.Id}");
+
+            await _botClient.SendTextMessageAsync(
                 chatId: ChatId,
                 text: "Выбери категорию",
                 replyMarkup: new InlineKeyboardMarkup(
@@ -45,13 +53,12 @@ namespace BoyfriendBot.Domain.Commands
                     {
                         InlineKeyboardButton.WithCallbackData("Получение сообщений", "settings mes"),
                     }));
-
         }
 
         private async void OnCallbackQueryEventHandler(object sender, CallbackQueryEventArgs e)
         {
             var query = e.CallbackQuery;
-
+            
             if (query.Data == "settings mes")
             {
                 var command = _serviceProvider.GetService<MessagesSettingsCommand>();
