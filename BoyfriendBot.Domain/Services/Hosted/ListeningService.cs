@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace BoyfriendBot.Domain.Services.Hosted
 {
@@ -60,12 +61,17 @@ namespace BoyfriendBot.Domain.Services.Hosted
             }
 
             _botClient.OnMessage += OnMessage;
+            _botClient.OnCallbackQuery += OnCallbackQuery;
 
-            _botClient.StartReceiving();
+            _botClient.StartReceiving(new UpdateType[] { UpdateType.Message });
 
             _monitoringManager.Listening = true;
 
             _logger.LogInformation("Started");
+        }
+
+        private void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
+        {
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

@@ -38,10 +38,10 @@ namespace BoyfriendBot.Domain.Core
 
             public const string WakeUpCategory = "WakeUp";
 
-            public const string GoodMorningType = "goodMorning";
+            public const string GoodMorningType = "goodmorning";
             public const string LunchType = "lunch";
             public const string DinnerType = "dinner";
-            public const string GoodNightType = "goodNight";
+            public const string GoodNightType = "goodnight";
         }
 
         public class CommandPatterns

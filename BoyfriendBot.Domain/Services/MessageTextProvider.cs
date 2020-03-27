@@ -51,7 +51,15 @@ namespace BoyfriendBot.Domain.Services
 
             var index = rng.Next(messages.Count);
 
-            return messages[index];
+            var message = messages[index];
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogWarning($"Message text was empty or whitespace. Category: {xCategory.Name}, Type: {typeString}, Rarity: {rarityString}");
+                return null;
+            }
+
+            return message;
         }
 
         private XDocument GetXDoc()

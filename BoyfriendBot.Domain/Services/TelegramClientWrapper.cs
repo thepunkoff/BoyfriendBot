@@ -37,12 +37,14 @@ namespace BoyfriendBot.Domain.Services
             var proxy = new WebProxy
             {
                 Address = new Uri($"http://{ip}:{port}"),
-                Credentials = new NetworkCredential
-                {
-                    UserName = username,
-                    Password = password
-                },
                 UseDefaultCredentials = useDefaultCredentials
+            };
+
+            // wtf? inline не срабатывало
+            proxy.Credentials = new NetworkCredential()
+            {
+                UserName = username,
+                Password = password
             };
 
             var tokenFile = Configuration.GetValue<string>("BotTokenRelativePath");
