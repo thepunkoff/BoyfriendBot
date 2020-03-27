@@ -8,6 +8,11 @@ namespace BoyfriendBot.Domain.Core
     {
         public const string ErrorMessage = "Упс, произошло какая-то ошибка.";
         public const string RedAlertMessage = "Ты мне нравишься.";
+
+        public class Commands
+        {
+            public const string SendMenuCommand = "menu";
+        }
         public class PartOfDay
         {
             public const string Night = "Night";
