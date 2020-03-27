@@ -63,15 +63,21 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _botClient.OnMessage += OnMessage;
             _botClient.OnCallbackQuery += OnCallbackQuery;
 
-            _botClient.StartReceiving(new UpdateType[] { UpdateType.Message });
+            _botClient.StartReceiving(new UpdateType[] { UpdateType.Message, UpdateType.CallbackQuery });
 
             _monitoringManager.Listening = true;
 
             _logger.LogInformation("Started");
         }
 
-        private void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
+        private async void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
         {
+            var data = e.CallbackQuery.Data;
+
+            if (data.StartsWith("/"))
+            {
+                await _commandProcessor.ProcessCommand(data.TrimStart('/'), e.CallbackQuery.Message.Chat.Id);
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -101,7 +107,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             if (message.Text.StartsWith("/"))
             {
-                await _commandProcessor.ProcessCommand(message);
+                await _commandProcessor.ProcessCommand(message.Text.TrimStart('/'), message.Chat.Id);
             }
         }
 

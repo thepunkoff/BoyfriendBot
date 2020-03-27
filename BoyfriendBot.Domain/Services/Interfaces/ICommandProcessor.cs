@@ -5,6 +5,6 @@ namespace BoyfriendBot.Domain.Services.Interfaces
 {
     public interface ICommandProcessor
     {
-        Task ProcessCommand(Message message);
+        Task ProcessCommand(string commandString, long chatId);
     }
 }

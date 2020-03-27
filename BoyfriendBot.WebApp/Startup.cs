@@ -50,7 +50,8 @@ namespace BoyfriendBot.WebApp
                 .Configure<ScheduledMessageServiceAppSettings>(Configuration.GetSection("ScheduledMessageService"))
                 .Configure<ListeningServiceAppSettings>(Configuration.GetSection("ListeningService"))
                 .Configure<DateTimeGeneratorAppSettings>(Configuration.GetSection("DateTimeGenerator"))
-
+                .Configure<InlineKeyboardMenuParserAppSettings>(Configuration.GetSection("InlineKeyboardMenuParser"))
+                
                 .AddSingleton(Configuration)
 
                 // Hosted
@@ -68,6 +69,7 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<IMessageSchedule, InMemoryMessageSchedule>()
                 .AddTransient<IRarityRoller, RarityRoller>()
                 .AddSingleton<IEventManager, EventManager>()
+                .AddSingleton<IInlineKeyboardMenuParser, InlineKeyboardMenuParser>()
 
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)
@@ -77,8 +79,7 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<ICommandProcessor, CommandProcessor>()
 
                 .AddTransient<NullCommand>()
-                .AddTransient<ChoseSettingsCommand>()
-                .AddTransient<MessagesSettingsCommand>()
+                .AddTransient<SendMenuCommand>()
 
                 // Other
                 .AddAutoMapper(typeof(MessageToUserDboProfile))

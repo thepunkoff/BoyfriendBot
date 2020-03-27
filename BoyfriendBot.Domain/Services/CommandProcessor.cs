@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Microsoft.Extensions.DependencyInjection;
 using BoyfriendBot.Domain.Core;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BoyfriendBot.Domain.Services
 {
@@ -19,16 +21,24 @@ namespace BoyfriendBot.Domain.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task ProcessCommand(Message message)
+        public async Task ProcessCommand(string commandString, long chatId)
         {
             Command command = _serviceProvider.GetService<NullCommand>();
 
-            if (message.Text.Contains(Const.CommandPatterns.SettingsCommand))
+            var words = commandString.Split(" ").ToList();
+
+            var commandId = words[0];
+
+            words.Remove(commandId);
+
+            var args = words.Count == 0 ? null : words.ToArray();
+
+            if (commandId == Const.Commands.SendMenuCommand)
             {
-                command = _serviceProvider.GetService<ChoseSettingsCommand>();
+                command = _serviceProvider.GetService<SendMenuCommand>();
             }
 
-            await command.Execute(message.Chat.Id);
+            await command.Execute(chatId, args);
         }
     }
 }
