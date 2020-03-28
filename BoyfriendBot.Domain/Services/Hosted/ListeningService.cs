@@ -73,10 +73,13 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private async void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
         {
             var data = e.CallbackQuery.Data;
+            var messageId = e.CallbackQuery.Message.MessageId.ToString();
 
             if (data.StartsWith("/"))
             {
-                await _commandProcessor.ProcessCommand(data.TrimStart('/'), e.CallbackQuery.Message.Chat.Id);
+                var message = data.TrimStart('/') + $" {messageId}";
+
+                await _commandProcessor.ProcessCommand(message.Trim(), e.CallbackQuery.Message.Chat.Id);
             }
         }
 

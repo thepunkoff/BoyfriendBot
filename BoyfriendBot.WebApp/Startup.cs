@@ -80,6 +80,7 @@ namespace BoyfriendBot.WebApp
 
                 .AddTransient<NullCommand>()
                 .AddTransient<SendMenuCommand>()
+                .AddTransient<SetSettingCommand>()
 
                 // Other
                 .AddAutoMapper(typeof(MessageToUserDboProfile))

@@ -23,6 +23,12 @@ namespace BoyfriendBot.Domain.Services
 
         public async Task ProcessCommand(string commandString, long chatId)
         {
+            if (Const.Commands.CommandAliases.Keys.Contains(commandString))
+            {
+                await ProcessCommand(Const.Commands.CommandAliases[commandString], chatId);
+                return;
+            }
+
             Command command = _serviceProvider.GetService<NullCommand>();
 
             var words = commandString.Split(" ").ToList();
@@ -37,7 +43,11 @@ namespace BoyfriendBot.Domain.Services
             {
                 command = _serviceProvider.GetService<SendMenuCommand>();
             }
-
+            else if (commandId == Const.Commands.SetSettingCommand)
+            {
+                command = _serviceProvider.GetService<SetSettingCommand>();
+            }
+            
             await command.Execute(chatId, args);
         }
     }

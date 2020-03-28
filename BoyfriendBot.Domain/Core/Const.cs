@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BoyfriendBot.Domain.Commands;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,12 +7,18 @@ namespace BoyfriendBot.Domain.Core
 {
     public class Const
     {
-        public const string ErrorMessage = "Упс, произошло какая-то ошибка.";
+        public const string ErrorMessage = "Упс, произошла какая-то ошибка.";
         public const string RedAlertMessage = "Ты мне нравишься.";
 
         public class Commands
         {
             public const string SendMenuCommand = "menu";
+            public const string SetSettingCommand = "set";
+
+            public static Dictionary<string, string> CommandAliases { get; } = new Dictionary<string, string>
+            {
+                ["settings"] = "menu settings_main"
+            };
         }
         public class PartOfDay
         {
