@@ -4,6 +4,7 @@ using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rant;
 using System;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace BoyfriendBot.Domain.Services
     {
         private readonly MessageTextProviderAppSettings _appSettings;
         private readonly ILogger<MessageTextProvider> _logger;
+        private RantEngine _rant;
 
         public MessageTextProvider(
               IOptions<MessageTextProviderAppSettings> appSettings
@@ -23,6 +25,9 @@ namespace BoyfriendBot.Domain.Services
         {
             _appSettings = appSettings.Value;
             _logger = logger;
+
+            _rant = new RantEngine();
+            _rant.LoadPackage(_appSettings.RelativeRantPackagePath);
         }
 
         public string GetMessage(string category, MessageType type, MessageRarity rarity)
@@ -34,14 +39,13 @@ namespace BoyfriendBot.Domain.Services
             var typeString = type.ToString().ToLowerInvariant();
             var rarityString = rarity.ToString().ToLowerInvariant();
 
-            var messages = xCategory
+            var xMessages = xCategory
                 .Elements()
                 .Where(x => x.Attribute(Const.XmlAliases.TypeAttribute).Value == typeString)
                 .Where(x => x.Attribute(Const.XmlAliases.RarityAttribute).Value == rarityString)
-                .Select(x => x.Value)
                 .ToList();
 
-            if (messages.Count == 0)
+            if (xMessages.Count == 0)
             {
                 _logger.LogWarning($"Couldn't find any message for query. Category: {xCategory.Name}, Type: {typeString}, Rarity: {rarityString}");
                 return null;
@@ -49,17 +53,26 @@ namespace BoyfriendBot.Domain.Services
 
             var rng = new Random();
 
-            var index = rng.Next(messages.Count);
+            var index = rng.Next(xMessages.Count);
 
-            var message = messages[index];
+            var xMessage = xMessages[index];
 
-            if (string.IsNullOrWhiteSpace(message))
+            if (string.IsNullOrWhiteSpace(xMessage.Value))
             {
                 _logger.LogWarning($"Message text was empty or whitespace. Category: {xCategory.Name}, Type: {typeString}, Rarity: {rarityString}");
                 return null;
             }
 
-            return message;
+            if (xMessage.Attribute("rant") != null && xMessage.Attribute("rant").Value == "true")
+            {
+                var rantProgram = RantProgram.CompileString(xMessage.Value);
+                return _rant.Do(rantProgram);
+            }
+            else
+            {
+                return xMessage.Value;
+            }
+
         }
 
         private XDocument GetXDoc()
