@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using BoyfriendBot.Domain.AppSettings;
@@ -23,7 +24,9 @@ namespace BoyfriendBot.Domain.Services
 
         public InlineKeyboardMenu Parse(string menuId)
         {
-            var json = File.ReadAllText(_appSettings.MenusJsonRelativePath);
+            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
+
+            var json = File.ReadAllText(Path.Combine(executionPath, _appSettings.MenusJsonRelativePath));
 
             var jDoc = JsonDocument.Parse(json);
 

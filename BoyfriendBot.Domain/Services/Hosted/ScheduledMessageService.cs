@@ -56,8 +56,6 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _rarityRoller = rarityRoller;
             _eventManager = eventManager;
 
-            _cts = new CancellationTokenSource();
-
             _logger.LogInformation("Initializing scheduled messaging service...");
 
             // get message count from personal settings
@@ -89,6 +87,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             _logger.LogInformation("Started");
 
+            _cts = new CancellationTokenSource();
             var task = Task.Run(() => Run(_cts.Token));
 
             return;
@@ -175,7 +174,11 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 {
                     var message = await _messageSchedule.GetScheduledMessage(messageTime, cancellationToken);
 
-                    await _telegramClient.SendMessageAsync(messageTime.PartOfDay().Name, message.Type, message.Rarity, message.ChatId);
+                    await _telegramClient.SendMessageAsync(
+                        category: messageTime.PartOfDay().Name,
+                        message.Type,
+                        message.Rarity,
+                        message.ChatId);
                     
                     await _messageSchedule.RemoveScheduledMessage(messageTime, cancellationToken);
                 }
@@ -215,12 +218,14 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
                         if (now > end) continue;
 
+                        var schedulingTime = _dateTimeGenerator.GenerateRandomDateTimeWithinRange(new DateTimeRange(start, end));
                         var message = new ScheduledMessage
                         {
                             ChatId = user.ChatId,
                             Rarity = _rarityRoller.RollRarityForUser(user),
                             Type = Enum.Parse<MessageType>(messageType.Type.ToUpperInvariant()),
-                            Time = _dateTimeGenerator.GenerateRandomDateTimeWithinRange(new DateTimeRange(start, end)),
+                            Time = schedulingTime,
+                            Category = Enum.Parse<MessageCategory>(schedulingTime.PartOfDay().Name.ToUpperInvariant())
                         };
 
                         await _messageSchedule.AddScheduledMessage(message, cancellationToken);
@@ -252,6 +257,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
             var users = await _userStorage.GetAllUsersForScheduledMessagesNoTracking();
 
             var scheduledCount = 0;
+            var totalOverriddenCount = 0;
+            var overrideRng = new Random();
             foreach (var user in users)
             {
                 foreach (var part in partsOfDay)
@@ -279,8 +286,13 @@ namespace BoyfriendBot.Domain.Services.Hosted
                         Type = MessageType.STANDARD,
                         Rarity = _rarityRoller.RollRarityForUser(user),
                         ChatId = user.ChatId,
-                        Time = dateTime
-                    });
+                        Time = dateTime,
+                        Category = Enum.Parse<MessageCategory>(dateTime.PartOfDay().Name.ToUpperInvariant())
+                    }).ToList();
+
+                    var overridenCount = TryOverrideByAny(messages, overrideRng);
+
+                    totalOverriddenCount += overridenCount;
 
                     await _messageSchedule.AddScheduledMessageRange(messages, cancellationToken);
 
@@ -288,7 +300,24 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 }
             }
 
-            _logger.LogInformation($"{scheduledCount} standard messages were scheduled.");
+            _logger.LogInformation($"{scheduledCount} standard messages were scheduled. {totalOverriddenCount} of them overridden to \"ANY\" category.");
+        }
+
+        private int TryOverrideByAny(List<ScheduledMessage> messages, Random overrideRng)
+        {
+            var overridenCount = 0;
+            foreach (var message in messages)
+            {
+                var overrideCategoryByAny = overrideRng.NextDouble() <= _appSettings.OverrideCategoryChanceNormalized;
+
+                if (overrideCategoryByAny)
+                {
+                    message.Category = MessageCategory.ANY;
+                    overridenCount++;
+                }
+            }
+
+            return overridenCount;
         }
 
         private async Task RescheduleMessages(CancellationToken cancellationToken)

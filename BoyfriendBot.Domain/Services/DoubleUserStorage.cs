@@ -1,7 +1,9 @@
-﻿using BoyfriendBot.Domain.Data.Context.Interfaces;
+﻿using BoyfriendBot.Domain.AppSettings;
+using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,16 @@ namespace BoyfriendBot.Domain.Services
 {
     public class DoubleUserStorage : IUserStorage
     {
+        private readonly ScheduledMessageServiceAppSettings _scheduledMessageServiceAppSettings;
         private readonly IBoyfriendBotDbContextFactory _dbContextFactory;
         private Dictionary<long, long> _userCache = new Dictionary<long, long>();
 
-        public DoubleUserStorage(IBoyfriendBotDbContextFactory dbContextFactory)
+        public DoubleUserStorage(
+              IOptions<ScheduledMessageServiceAppSettings> appSettings
+            , IBoyfriendBotDbContextFactory dbContextFactory
+            )
         {
+            _scheduledMessageServiceAppSettings = appSettings.Value;
             _dbContextFactory = dbContextFactory;
 
             using (var context = _dbContextFactory.Create())
@@ -103,6 +110,26 @@ namespace BoyfriendBot.Domain.Services
             using (var context = _dbContextFactory.Create())
             {
                 context.User.Add(userDbo);
+
+                var settings = new UserSettingsDbo
+                {
+                    UserId = userDbo.UserId,
+                    RecieveReminders = true,
+                    RecieveScheduled = true
+                };
+
+                var rarityWeights = new UserRarityWeightsDbo
+                {
+                    UserId = userDbo.UserId,
+                    WhiteWeight = _scheduledMessageServiceAppSettings.DefaultWhiteWeight,
+                    GreenWeight = _scheduledMessageServiceAppSettings.DefaultGreenWeight,
+                    BlueWeight = _scheduledMessageServiceAppSettings.DefaultBlueWeight,
+                    PurpleWeight = _scheduledMessageServiceAppSettings.DefaultPurpleWeight,
+                    OrangeWeight = _scheduledMessageServiceAppSettings.DefaultOrangeWeight
+                };
+
+                context.UserSettings.Add(settings);
+                context.RarityWeights.Add(rarityWeights);
 
                 await context.SaveChangesAsync();
             }
