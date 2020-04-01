@@ -70,6 +70,8 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<IRarityRoller, RarityRoller>()
                 .AddSingleton<IEventManager, EventManager>()
                 .AddSingleton<IInlineKeyboardMenuParser, InlineKeyboardMenuParser>()
+                .AddSingleton<IMessageTextTransformer, MessageTextTransformer>()
+                .AddSingleton<IRandomFactGenerator, RandstuffruRandomFactGenerator>()
 
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)
