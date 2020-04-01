@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using Telegram.Bot;
 
 namespace BoyfriendBot.Domain.Services
@@ -47,12 +48,13 @@ namespace BoyfriendBot.Domain.Services
                 Password = password
             };
 
+            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
             var tokenFile = Configuration.GetValue<string>("BotTokenRelativePath");
 
             string token = null;
             try
             {
-                token = File.ReadAllText(tokenFile);
+                token = File.ReadAllText(Path.Combine(executionPath, tokenFile));
             }
             catch (FileNotFoundException ex)
             {
@@ -66,8 +68,9 @@ namespace BoyfriendBot.Domain.Services
 
         private ProxyAppSettngs GetProxyAppSettings()
         {
+            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
             var proxyJsonPath = Configuration.GetValue<string>("ProxyConfigRelativePath");
-            var fullPath = Path.Combine(Environment.CurrentDirectory, proxyJsonPath);
+            var fullPath = Path.Combine(executionPath, proxyJsonPath);
 
             string proxyJsonFile = null;
             try

@@ -13,5 +13,11 @@
         public bool ScheduleInNight { get; set; }
         public int NightMessagesCount { get; set; }
         public double ThresholdInHours { get; set; }
+        public double OverrideCategoryChanceNormalized { get; set; } // the chance of morning/afternoon/evening/night become the "ANY" category
+        public int DefaultWhiteWeight { get; set; }
+        public int DefaultGreenWeight { get; set; }
+        public int DefaultBlueWeight { get; set; }
+        public int DefaultPurpleWeight { get; set; }
+        public int DefaultOrangeWeight { get; set; }
     }
 }

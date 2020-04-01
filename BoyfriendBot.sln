@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoyfriendBot.Domain", "Boyf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoyfriendBot.WebApp", "BoyfriendBot.WebApp\BoyfriendBot.WebApp.csproj", "{7FCCD631-9F86-47D2-9027-B4C2B1F38B54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RussianRantDictionary", "RussianRantDictionary\RussianRantDictionary.csproj", "{F51B5DF5-1214-4E12-AD5F-CD627995AA75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{7FCCD631-9F86-47D2-9027-B4C2B1F38B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FCCD631-9F86-47D2-9027-B4C2B1F38B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FCCD631-9F86-47D2-9027-B4C2B1F38B54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F51B5DF5-1214-4E12-AD5F-CD627995AA75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F51B5DF5-1214-4E12-AD5F-CD627995AA75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F51B5DF5-1214-4E12-AD5F-CD627995AA75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F51B5DF5-1214-4E12-AD5F-CD627995AA75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

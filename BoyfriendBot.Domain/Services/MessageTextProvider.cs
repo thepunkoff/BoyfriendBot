@@ -8,6 +8,7 @@ using Rant;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Linq;
 
 namespace BoyfriendBot.Domain.Services
@@ -27,7 +28,9 @@ namespace BoyfriendBot.Domain.Services
             _logger = logger;
 
             _rant = new RantEngine();
-            _rant.LoadPackage(_appSettings.RelativeRantPackagePath);
+            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
+            var rantPackagePath = Path.Combine(executionPath, _appSettings.RelativeRantPackagePath);
+            _rant.LoadPackage(rantPackagePath);
         }
 
         public string GetMessage(string category, MessageType type, MessageRarity rarity)
@@ -77,7 +80,8 @@ namespace BoyfriendBot.Domain.Services
 
         private XDocument GetXDoc()
         {
-            var path = Path.Combine(Environment.CurrentDirectory, _appSettings.RelativeFilePath);
+            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
+            var path = Path.Combine(executionPath, _appSettings.RelativeFilePath);
 
             FileStream file = null;
             try
