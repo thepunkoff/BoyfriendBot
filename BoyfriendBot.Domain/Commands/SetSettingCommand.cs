@@ -42,7 +42,7 @@ namespace BoyfriendBot.Domain.Commands
             var messageId = 0;
             if (args.Length == 3)
             {
-                int.TryParse(args[1], out messageId);
+                int.TryParse(args[2], out messageId);
             }
 
             var query = $"UPDATE \"UserSettings\" SET \"{settingId}\" = {settingValue} WHERE \"UserId\" = {userId}";
@@ -55,15 +55,17 @@ namespace BoyfriendBot.Domain.Commands
 
                     _logger.LogError($"Executed query \"{query}\". ChatId: {chatId}");
 
-                    if (messageId == 0)
-                    {
-                        await _botClient.SendTextMessageAsync(chatId, "Готово!");
+                    await _botClient.SendTextMessageAsync(chatId, "Готово!");
 
-                    }
-                    else
-                    {
-                        await _botClient.EditMessageTextAsync(chatId, messageId, "Готово!");
-                    }
+                    //if (messageId == 0)
+                    //{
+                    //    await _botClient.SendTextMessageAsync(chatId, "Готово!");
+                    //
+                    //}
+                    //else
+                    //{
+                    //    await _botClient.EditMessageTextAsync(chatId, messageId, "Готово!");
+                    //}
                 }
                 catch (Exception ex)
                 {
