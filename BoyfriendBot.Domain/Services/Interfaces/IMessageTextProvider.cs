@@ -1,10 +1,11 @@
 ﻿using BoyfriendBot.Domain.Core;
 using BoyfriendBot.Domain.Services.Models;
+using System.Threading.Tasks;
 
 namespace BoyfriendBot.Domain.Services.Interfaces
 {
     public interface IMessageTextProvider
     {
-        string GetMessage(string category, MessageType type, MessageRarity rarity);
+        Task<string> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity);
     }
 }

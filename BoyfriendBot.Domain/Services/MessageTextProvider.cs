@@ -8,7 +8,7 @@ using Rant;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace BoyfriendBot.Domain.Services
@@ -17,30 +17,28 @@ namespace BoyfriendBot.Domain.Services
     {
         private readonly MessageTextProviderAppSettings _appSettings;
         private readonly ILogger<MessageTextProvider> _logger;
-        private RantEngine _rant;
+        private readonly IMessageTextTransformer _messageTextTransformer;
 
         public MessageTextProvider(
               IOptions<MessageTextProviderAppSettings> appSettings
             , ILogger<MessageTextProvider> logger
+            , IMessageTextTransformer messageTextTransformer
             )
         {
             _appSettings = appSettings.Value;
             _logger = logger;
-
-            _rant = new RantEngine();
-            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-            var rantPackagePath = Path.Combine(executionPath, _appSettings.RelativeRantPackagePath);
-            _rant.LoadPackage(rantPackagePath);
+            _messageTextTransformer = messageTextTransformer;
         }
 
-        public string GetMessage(string category, MessageType type, MessageRarity rarity)
+        public async Task<string> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity)
         {
             var xDoc = GetXDoc();
 
-            var xCategory = xDoc.Root.Element(category);
-
+            var categoryString = category.ToString().ToLowerInvariant();
             var typeString = type.ToString().ToLowerInvariant();
             var rarityString = rarity.ToString().ToLowerInvariant();
+
+            var xCategory = xDoc.Root.Element(categoryString);
 
             var xMessages = xCategory
                 .Elements()
@@ -60,22 +58,27 @@ namespace BoyfriendBot.Domain.Services
 
             var xMessage = xMessages[index];
 
+            string message = null;
+
             if (string.IsNullOrWhiteSpace(xMessage.Value))
             {
                 _logger.LogWarning($"Message text was empty or whitespace. Category: {xCategory.Name}, Type: {typeString}, Rarity: {rarityString}");
                 return null;
             }
 
-            if (xMessage.Attribute("rant") != null && xMessage.Attribute("rant").Value == "true")
+            message = xMessage.Value;
+
+            if (xMessage.Attribute("insert") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("insert").Value))
             {
-                var rantProgram = RantProgram.CompileString(xMessage.Value);
-                return _rant.Do(rantProgram);
-            }
-            else
-            {
-                return xMessage.Value;
+                message = await _messageTextTransformer.ExecuteInsert(xMessage.Attribute("insert").Value, message);
             }
 
+            if (xMessage.Attribute("rant") != null && xMessage.Attribute("rant").Value == "true")
+            {
+                message = _messageTextTransformer.ExecuteRant(message);
+            }
+
+            return message;
         }
 
         private XDocument GetXDoc()

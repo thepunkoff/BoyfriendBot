@@ -87,6 +87,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             _logger.LogInformation("Started");
 
+            await _telegramClient.SendMessageAsync(MessageCategory.ANY, MessageType.STANDARD, MessageRarity.BLUE, 583334704);
+
             _cts = new CancellationTokenSource();
             var task = Task.Run(() => Run(_cts.Token));
 
@@ -175,7 +177,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                     var message = await _messageSchedule.GetScheduledMessage(messageTime, cancellationToken);
 
                     await _telegramClient.SendMessageAsync(
-                        category: messageTime.PartOfDay().Name,
+                        category: Enum.Parse<MessageCategory>(messageTime.PartOfDay().Name.ToUpperInvariant()),
                         message.Type,
                         message.Rarity,
                         message.ChatId);

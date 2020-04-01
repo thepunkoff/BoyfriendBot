@@ -5,6 +5,6 @@ namespace BoyfriendBot.Domain.Services.Interfaces
 {
     public interface ITelegramClient
     {
-        Task SendMessageAsync(string category, MessageType type, MessageRarity rarity, long chatId);
+        Task SendMessageAsync(MessageCategory category, MessageType type, MessageRarity rarity, long chatId);
     }
 }

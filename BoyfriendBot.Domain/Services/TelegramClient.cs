@@ -24,11 +24,11 @@ namespace BoyfriendBot.Domain.Services
             _logger = logger;
         }
 
-        public async Task SendMessageAsync(string category, MessageType type, MessageRarity rarity, long chatId)
+        public async Task SendMessageAsync(MessageCategory category, MessageType type, MessageRarity rarity, long chatId)
         {
             var redalertMessage = false;
 
-            var message = _messageTextProvider.GetMessage(category, type, rarity);
+            var message = await _messageTextProvider.GetMessage(category, type, rarity);
 
             if (message == null)
             {
@@ -46,7 +46,7 @@ namespace BoyfriendBot.Domain.Services
             {
                 _logger.LogInformation($"Message sent. " +
                             $"ChatId: {chatId}, " +
-                            $"Category: {category.ToUpperInvariant()}, " +
+                            $"Category: {category}, " +
                             $"Type: {type}, " +
                             $"Rarity: {rarity}.");
             }

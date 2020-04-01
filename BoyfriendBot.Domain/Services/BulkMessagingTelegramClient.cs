@@ -57,7 +57,7 @@ namespace BoyfriendBot.Domain.Services
             foreach (var user in users)
             {
                 var rarity = _rarityRoller.RollRarityForUser(user);
-                var message = _messageTextProvider.GetMessage(Const.XmlAliases.WakeUpCategory, MessageType.STANDARD, rarity);
+                var message = await _messageTextProvider.GetMessage(MessageCategory.WAKEUP, MessageType.STANDARD, rarity);
 
                 var sentMessage = await _botClient.SendTextMessageAsync(user.ChatId, message);
                 sentMessages.Add(sentMessage);
@@ -86,7 +86,7 @@ namespace BoyfriendBot.Domain.Services
             foreach (var user in users)
             {
                 var rarity = _rarityRoller.RollRarityForUser(user);
-                var message = _messageTextProvider.GetMessage(partOfDay.Name, MessageType.STANDARD, rarity);
+                var message = await _messageTextProvider.GetMessage(Enum.Parse<MessageCategory>(partOfDay.Name.ToUpperInvariant()), MessageType.STANDARD, rarity);
 
                 var sentMessage = await _botClient.SendTextMessageAsync(user.ChatId, message);
                 sentMessages.Add(sentMessage);
