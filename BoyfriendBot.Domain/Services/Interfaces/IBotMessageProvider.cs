@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace BoyfriendBot.Domain.Services.Interfaces
 {
-    public interface IMessageTextProvider
+    public interface IBotMessageProvider
     {
-        Task<string> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity);
+        Task<BotMessage> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity);
     }
 }

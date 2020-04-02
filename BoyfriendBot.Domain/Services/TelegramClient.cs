@@ -2,20 +2,22 @@
 using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Logging;
+using System.IO;
 using System.Threading.Tasks;
+using Telegram.Bot.Types.InputFiles;
 
 namespace BoyfriendBot.Domain.Services
 {
     public class TelegramClient : ITelegramClient
     {
         private readonly ITelegramBotClientWrapper _telegramBotClientWrapper;
-        private readonly IMessageTextProvider _messageTextProvider;
+        private readonly IBotMessageProvider _messageTextProvider;
         private readonly ILogger<TelegramClient> _logger;
 
 
         public TelegramClient(
               ITelegramBotClientWrapper telegramBotClientWrapper
-            , IMessageTextProvider messageTextProvider
+            , IBotMessageProvider messageTextProvider
             , ILogger<TelegramClient> logger
             )
         {
@@ -32,11 +34,18 @@ namespace BoyfriendBot.Domain.Services
 
             if (message == null)
             {
-                message = Const.RedAlertMessage;
+                message.Text = Const.RedAlertMessage;
                 redalertMessage = true;
             }
 
-            await _telegramBotClientWrapper.Client.SendTextMessageAsync(chatId, message);
+            if (message.ImageUrl == null)
+            {
+                await _telegramBotClientWrapper.Client.SendTextMessageAsync(chatId, message.Text);
+            }
+            else
+            {
+                await _telegramBotClientWrapper.Client.SendPhotoAsync(chatId, message.ImageUrl, caption: message.Text);
+            }
 
             if (redalertMessage)
             {
