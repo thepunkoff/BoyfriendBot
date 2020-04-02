@@ -4,6 +4,7 @@ using BoyfriendBot.Domain.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rant;
+using Rant.Core.ObjectModel;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace BoyfriendBot.Domain.Services
     {
         private readonly MessageTextProviderAppSettings _appSettings;
         private readonly ILogger<MessageTextTransformer> _logger;
+
         private RantEngine _rant;
         private readonly IRandomFactGenerator _randomFactGenerator;
 
@@ -36,8 +38,16 @@ namespace BoyfriendBot.Domain.Services
             _rant.LoadPackage(rantPackagePath);
         }
 
-        public string ExecuteRant(string rawMessage)
+        public string ExecuteRant(string rawMessage, bool gender, bool botGender)
         {
+            _rant["gender"] = gender == Const.Gender.Male
+                ? new RantObject("male")
+                : new RantObject("female");
+
+            _rant["botGender"] = botGender == Const.Gender.Male
+                            ? new RantObject("male")
+                            : new RantObject("female");
+
             var rantProgram = RantProgram.CompileString(rawMessage);
             return _rant.Do(rantProgram);
         }

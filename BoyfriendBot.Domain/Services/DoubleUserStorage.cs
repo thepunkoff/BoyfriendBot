@@ -1,4 +1,5 @@
 ﻿using BoyfriendBot.Domain.AppSettings;
+using BoyfriendBot.Domain.Core;
 using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Interfaces;
@@ -115,7 +116,9 @@ namespace BoyfriendBot.Domain.Services
                 {
                     UserId = userDbo.UserId,
                     RecieveReminders = true,
-                    RecieveScheduled = true
+                    RecieveScheduled = true,
+                    Gender = Const.Gender.Male,
+                    BotGender = Const.Gender.Male
                 };
 
                 var rarityWeights = new UserRarityWeightsDbo

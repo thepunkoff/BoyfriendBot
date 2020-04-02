@@ -60,7 +60,7 @@ namespace BoyfriendBot.Domain.Services
             {
                 Message sentMessage = null;
                 var rarity = _rarityRoller.RollRarityForUser(user);
-                var message = await _messageTextProvider.GetMessage(MessageCategory.WAKEUP, MessageType.STANDARD, rarity);
+                var message = await _messageTextProvider.GetMessage(MessageCategory.WAKEUP, MessageType.STANDARD, rarity, user.ChatId); // could already pass gender and so on
 
                 if (message.ImageUrl == null)
                 {
@@ -99,7 +99,7 @@ namespace BoyfriendBot.Domain.Services
                 Message sentMessage = null;
 
                 var rarity = _rarityRoller.RollRarityForUser(user);
-                var message = await _messageTextProvider.GetMessage(Enum.Parse<MessageCategory>(partOfDay.Name.ToUpperInvariant()), MessageType.STANDARD, rarity);
+                var message = await _messageTextProvider.GetMessage(Enum.Parse<MessageCategory>(partOfDay.Name.ToUpperInvariant()), MessageType.STANDARD, rarity, user.ChatId); // could already pass gender and so on
 
                 if (message.ImageUrl == null)
                 {

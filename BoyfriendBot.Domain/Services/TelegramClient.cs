@@ -30,7 +30,7 @@ namespace BoyfriendBot.Domain.Services
         {
             var redalertMessage = false;
 
-            var message = await _messageTextProvider.GetMessage(category, type, rarity);
+            var message = await _messageTextProvider.GetMessage(category, type, rarity, chatId);
 
             if (message == null)
             {
