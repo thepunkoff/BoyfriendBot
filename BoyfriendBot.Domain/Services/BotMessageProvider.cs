@@ -13,24 +13,27 @@ using System.Xml.Linq;
 
 namespace BoyfriendBot.Domain.Services
 {
-    public class MessageTextProvider : IMessageTextProvider
+    public class BotMessageProvider : IBotMessageProvider
     {
         private readonly MessageTextProviderAppSettings _appSettings;
-        private readonly ILogger<MessageTextProvider> _logger;
+        private readonly ILogger<BotMessageProvider> _logger;
         private readonly IMessageTextTransformer _messageTextTransformer;
+        private readonly IRandomImageProvider _randomImageProvider;
 
-        public MessageTextProvider(
+        public BotMessageProvider(
               IOptions<MessageTextProviderAppSettings> appSettings
-            , ILogger<MessageTextProvider> logger
+            , ILogger<BotMessageProvider> logger
             , IMessageTextTransformer messageTextTransformer
+            , IRandomImageProvider randomImageProvider
             )
         {
             _appSettings = appSettings.Value;
             _logger = logger;
             _messageTextTransformer = messageTextTransformer;
+            _randomImageProvider = randomImageProvider;
         }
 
-        public async Task<string> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity)
+        public async Task<BotMessage> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity)
         {
             var xDoc = GetXDoc();
 
@@ -58,7 +61,7 @@ namespace BoyfriendBot.Domain.Services
 
             var xMessage = xMessages[index];
 
-            string message = null;
+            BotMessage message = new BotMessage();
 
             if (string.IsNullOrWhiteSpace(xMessage.Value))
             {
@@ -66,17 +69,28 @@ namespace BoyfriendBot.Domain.Services
                 return null;
             }
 
-            message = xMessage.Value;
+            message.Text = xMessage.Value;
 
             if (xMessage.Attribute("insert") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("insert").Value))
             {
-                message = await _messageTextTransformer.ExecuteInsert(xMessage.Attribute("insert").Value, message);
+                message.Text = await _messageTextTransformer.ExecuteInsert(xMessage.Attribute("insert").Value, message.Text);
             }
 
             if (xMessage.Attribute("rant") != null && xMessage.Attribute("rant").Value == "true")
             {
-                message = _messageTextTransformer.ExecuteRant(message);
+                message.Text = _messageTextTransformer.ExecuteRant(message.Text);
             }
+
+            if (xMessage.Attribute("imagesrc") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("imagesrc").Value))
+            {
+
+            }
+
+            if (xMessage.Attribute("image") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("image").Value))
+            {
+                message.ImageUrl = await _randomImageProvider.GetRandomImageUrl(xMessage.Attribute("image").Value);
+            }
+            
 
             return message;
         }

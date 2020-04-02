@@ -60,7 +60,7 @@ namespace BoyfriendBot.WebApp
 
                 // Services
                 .AddSingleton<IUserStorage, DoubleUserStorage>()
-                .AddTransient<IMessageTextProvider, MessageTextProvider>()
+                .AddTransient<IBotMessageProvider, BotMessageProvider>()
                 .AddTransient<ITelegramBotClientWrapper, TelegramBotClientWrapper>()
                 .AddTransient<ITelegramClient, TelegramClient>()
                 .AddTransient<IBulkMessagingTelegramClient, BulkMessagingTelegramClient>()
@@ -72,6 +72,8 @@ namespace BoyfriendBot.WebApp
                 .AddSingleton<IInlineKeyboardMenuParser, InlineKeyboardMenuParser>()
                 .AddSingleton<IMessageTextTransformer, MessageTextTransformer>()
                 .AddSingleton<IRandomFactGenerator, RandstuffruRandomFactGenerator>()
+                .AddSingleton<IRandomImageProvider, YandexRandomImageProvider>()
+                
 
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)

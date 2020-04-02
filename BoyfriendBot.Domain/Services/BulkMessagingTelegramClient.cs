@@ -6,12 +6,14 @@ using BoyfriendBot.Domain.Services.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.InputFiles;
 
 namespace BoyfriendBot.Domain.Services
 {
@@ -19,13 +21,13 @@ namespace BoyfriendBot.Domain.Services
     {
         private readonly ITelegramBotClient _botClient;
         private readonly IBoyfriendBotDbContextFactory _dbContextFactory;
-        private readonly IMessageTextProvider _messageTextProvider;
+        private readonly IBotMessageProvider _messageTextProvider;
         private readonly IRarityRoller _rarityRoller;
 
         public BulkMessagingTelegramClient(
               ITelegramBotClientWrapper wrapper
             , IBoyfriendBotDbContextFactory dbContextFactory
-            , IMessageTextProvider messageTextProvider
+            , IBotMessageProvider messageTextProvider
             , IRarityRoller rarityRoller
             )
         {
@@ -56,10 +58,19 @@ namespace BoyfriendBot.Domain.Services
 
             foreach (var user in users)
             {
+                Message sentMessage = null;
                 var rarity = _rarityRoller.RollRarityForUser(user);
                 var message = await _messageTextProvider.GetMessage(MessageCategory.WAKEUP, MessageType.STANDARD, rarity);
 
-                var sentMessage = await _botClient.SendTextMessageAsync(user.ChatId, message);
+                if (message.ImageUrl == null)
+                {
+                    sentMessage = await _botClient.SendTextMessageAsync(user.ChatId, message.Text);
+                }
+                else
+                {
+                    sentMessage = await _botClient.SendPhotoAsync(user.ChatId, message.ImageUrl, caption: message.Text);
+                }
+
                 sentMessages.Add(sentMessage);
             }
 
@@ -85,10 +96,19 @@ namespace BoyfriendBot.Domain.Services
             }
             foreach (var user in users)
             {
+                Message sentMessage = null;
+
                 var rarity = _rarityRoller.RollRarityForUser(user);
                 var message = await _messageTextProvider.GetMessage(Enum.Parse<MessageCategory>(partOfDay.Name.ToUpperInvariant()), MessageType.STANDARD, rarity);
 
-                var sentMessage = await _botClient.SendTextMessageAsync(user.ChatId, message);
+                if (message.ImageUrl == null)
+                {
+                    sentMessage = await _botClient.SendTextMessageAsync(user.ChatId, message.Text);
+                }
+                else
+                {
+                    sentMessage = await _botClient.SendPhotoAsync(user.ChatId, message.ImageUrl, caption: message.Text);
+                }
                 sentMessages.Add(sentMessage);
             }
 
