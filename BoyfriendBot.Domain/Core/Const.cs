@@ -10,6 +10,12 @@ namespace BoyfriendBot.Domain.Core
         public const string ErrorMessage = "Упс, произошла какая-то ошибка.";
         public const string RedAlertMessage = "Ты мне нравишься.";
 
+        public class Gender
+        {
+            public const bool Male = true;
+            public const bool Female = false;
+        }
+
         public class Commands
         {
             public const string SendMenuCommand = "menu";

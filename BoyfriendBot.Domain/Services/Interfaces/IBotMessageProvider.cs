@@ -6,6 +6,6 @@ namespace BoyfriendBot.Domain.Services.Interfaces
 {
     public interface IBotMessageProvider
     {
-        Task<BotMessage> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity);
+        Task<BotMessage> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity, long chatId);
     }
 }

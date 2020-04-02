@@ -9,6 +9,8 @@ namespace BoyfriendBot.Domain.Data.Models
     {
         [Key]
         public long UserId { get; set; }
+        public bool Gender { get; set; }
+        public bool BotGender { get; set; }
         public bool RecieveReminders { get; set; }
         public bool RecieveScheduled { get; set; }
     }
