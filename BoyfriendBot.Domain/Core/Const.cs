@@ -13,7 +13,6 @@ namespace BoyfriendBot.Domain.Core
         public class Serilog
         {
             public const string ListeningService = "LS";
-            public const string ScheduledMessageService = "SMS";
         }
         public class Gender
         {

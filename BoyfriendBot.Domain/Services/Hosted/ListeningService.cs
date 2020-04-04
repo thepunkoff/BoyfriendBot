@@ -68,69 +68,102 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 return;
             }
 
-            _botClient.OnMessage += OnMessage;
-            _botClient.OnCallbackQuery += OnCallbackQuery;
+            try
+            {
+                _botClient.OnMessage += OnMessage;
+                _botClient.OnCallbackQuery += OnCallbackQuery;
 
-            _botClient.StartReceiving(new UpdateType[] { UpdateType.Message, UpdateType.CallbackQuery });
 
-            _monitoringManager.Listening = true;
+                _botClient.StartReceiving(new UpdateType[] { UpdateType.Message, UpdateType.CallbackQuery });
 
-            _logger.LogInformation($"[{Const.Serilog.ListeningService}] Started");
+                _monitoringManager.Listening = true;
+
+                _logger.LogInformation($"[{Const.Serilog.ListeningService}] Started");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"StartAsync: {ex.ToString()}");
+                throw;
+            }
         }
 
         private async void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
         {
-            var data = e.CallbackQuery.Data;
-            var messageId = e.CallbackQuery.Message.MessageId.ToString();
-
-            if (data.StartsWith("/"))
+            try
             {
-                var message = data.TrimStart('/') + $" {messageId}";
+                var data = e.CallbackQuery.Data;
+                var messageId = e.CallbackQuery.Message.MessageId.ToString();
 
-                await _commandProcessor.ProcessCommand(message.Trim(), e.CallbackQuery.Message.Chat.Id);
+                if (data.StartsWith("/"))
+                {
+                    var message = data.TrimStart('/') + $" {messageId}";
+
+                    await _commandProcessor.ProcessCommand(message.Trim(), e.CallbackQuery.Message.Chat.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"OnCallbackQuery: {ex.ToString()}");
+                throw;
             }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _botClient.StopReceiving();
+            try
+            {
+                _botClient.StopReceiving();
 
-            _monitoringManager.Listening = false;
+                _monitoringManager.Listening = false;
 
-            _logger.LogInformation($"[{Const.Serilog.ListeningService}] Stopped");
+                _logger.LogInformation($"[{Const.Serilog.ListeningService}] Stopped");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"StopAsync: {ex.ToString()}");
+                throw;
+            }
         }
 
         async void OnMessage(object sender, MessageEventArgs eventArgs)
         {
-            var message = eventArgs.Message;
-            var userId = message.From.Id;
-
-            LogMessage(message);
-
-            if (!_userStorage.HasUser(userId))
+            try
             {
-                var mappedUser = _mapper.Map<UserDbo>(message);
+                var message = eventArgs.Message;
+                var userId = message.From.Id;
 
-                await _userStorage.AddNewUser(mappedUser);
+                LogMessage(message);
 
-                _eventManager.InvokeNewUser(mappedUser);
+                if (!_userStorage.HasUser(userId))
+                {
+                    var mappedUser = _mapper.Map<UserDbo>(message);
+
+                    await _userStorage.AddNewUser(mappedUser);
+
+                    _eventManager.InvokeNewUser(mappedUser);
+                }
+                
+                var realUser = await _userStorage.GetUserByChatIdNoTracking(message.Chat.Id);
+
+                if (message.Text.StartsWith("/"))
+                {
+                    await _commandProcessor.ProcessCommand(message.Text.TrimStart('/'), message.Chat.Id);
+                }
+                else
+                {
+                    var responseMessage = await _botMessageProvider.GetMessage(
+                        MessageCategory.SIMPLERESPONSE,
+                        Models.MessageType.STANDARD,
+                        rarity: _rarityRoller.RollRarityForUser(realUser),
+                        message.Chat.Id);
+
+                    await _botClient.SendTextMessageAsync(message.Chat.Id, responseMessage.Text);
+                }
             }
-            
-            var realUser = await _userStorage.GetUserByChatIdNoTracking(message.Chat.Id);
-
-            if (message.Text.StartsWith("/"))
+            catch (Exception ex)
             {
-                await _commandProcessor.ProcessCommand(message.Text.TrimStart('/'), message.Chat.Id);
-            }
-            else
-            {
-                var responseMessage = await _botMessageProvider.GetMessage(
-                    MessageCategory.SIMPLERESPONSE,
-                    Models.MessageType.STANDARD,
-                    rarity: _rarityRoller.RollRarityForUser(realUser),
-                    message.Chat.Id);
-
-                await _botClient.SendTextMessageAsync(message.Chat.Id, responseMessage.Text);
+                _logger.LogCritical($"OnMessage: {ex.ToString()}");
+                throw;
             }
         }
 

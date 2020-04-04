@@ -56,7 +56,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _rarityRoller = rarityRoller;
             _eventManager = eventManager;
 
-            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] Initializing scheduled messaging service...");
+            _logger.LogInformation($"Initializing scheduled messaging service...");
 
             // get message count from personal settings
             MessageCounts = new Dictionary<PartOfDay, int>
@@ -80,17 +80,25 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 SendWakeUpMessage(cancellationToken);
             }
 
-            _eventManager.NewUserEvent += OnNewUser;
-            _eventManager.RescheduleClickedEvent += OnRescheduleClicked;
+            try
+            {
+                _eventManager.NewUserEvent += OnNewUser;
+                _eventManager.RescheduleClickedEvent += OnRescheduleClicked;
 
-            await RescheduleMessages(cancellationToken);
+                await RescheduleMessages(cancellationToken);
 
-            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] Started");
+                _logger.LogInformation($"Started");
 
-            _cts = new CancellationTokenSource();
-            var task = Task.Run(() => Run(_cts.Token));
+                _cts = new CancellationTokenSource();
+                var task = Task.Run(() => Run(_cts.Token));
 
-            return;
+                return;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"StartAsync: {ex.ToString()}");
+                throw;
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -100,14 +108,22 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 return;
             }
 
-            _cts.Cancel();
+            try
+            {
+                _cts.Cancel();
 
-            _eventManager.NewUserEvent -= OnNewUser;
-            _eventManager.RescheduleClickedEvent -= OnRescheduleClicked;
+                _eventManager.NewUserEvent -= OnNewUser;
+                _eventManager.RescheduleClickedEvent -= OnRescheduleClicked;
 
-            _monitoringManager.SchedulingMessages = false;
+                _monitoringManager.SchedulingMessages = false;
 
-            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] Stopped");
+                _logger.LogInformation($"Stopped");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"StopAsync: {ex.ToString()}");
+                throw;
+            }
         }
 
         private async void SendWakeUpMessage(CancellationToken cancellationToken)
@@ -154,7 +170,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString());
+                _logger.LogError($"Run: {ex.ToString()}");
                 throw;
             }
         }
@@ -237,7 +253,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 }
             }
 
-            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] {scheduledCount} special messages were scheduled.");
+            _logger.LogInformation($"{scheduledCount} special messages were scheduled.");
         }
 
         private async Task ScheduleStandardMessages(CancellationToken cancellationToken)
@@ -302,7 +318,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 }
             }
 
-            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] {scheduledCount} standard messages were scheduled. {totalOverriddenCount} of them overridden to \"ANY\" category.");
+            _logger.LogInformation($"{scheduledCount} standard messages were scheduled. {totalOverriddenCount} of them overridden to \"ANY\" category.");
         }
 
         private int TryOverrideByAny(List<ScheduledMessage> messages, Random overrideRng)
@@ -329,15 +345,16 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 return;
             }
 
-            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] Scheduling new messages...");
+            _logger.LogInformation($"Scheduling new messages...");
 
             await _messageSchedule.RemoveAllScheduledMessages(cancellationToken);
 
             await ScheduleStandardMessages(cancellationToken);
 
             await ScheduleSpecialMessages(cancellationToken);
-
-            _logger.LogInformation($"[{ Const.Serilog.ScheduledMessageService}] {_messageSchedule.ToString()}");
+#if DEBUG
+            _logger.LogInformation($"{_messageSchedule.ToString()}");
+#endif
         }
 
         #region EventHandlers

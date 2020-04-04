@@ -44,10 +44,10 @@ namespace BoyfriendBot.WebApp
                     outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
                     .Filter.ByIncludingOnly(x => x.MessageTemplate.Text.Contains(Const.Serilog.ListeningService))
                 )
-                .WriteTo.Logger(scheduledMessageServiceLoggerConfig => scheduledMessageServiceLoggerConfig
-                    .WriteTo.RollingFile("C:/Logs/BoyfriendBot/boyfriend-bot-scheduledMessageService.log",
+                .WriteTo.Logger(generalLoggerConfig => generalLoggerConfig
+                    .WriteTo.RollingFile("C:/Logs/BoyfriendBot/boyfriend-bot-general.log",
                     outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
-                    .Filter.ByIncludingOnly(x => x.MessageTemplate.Text.Contains(Const.Serilog.ScheduledMessageService))
+                    .Filter.ByExcluding(x => x.MessageTemplate.Text.Contains(Const.Serilog.ListeningService))
                 )
                 .CreateLogger();
 
