@@ -103,17 +103,18 @@ namespace BoyfriendBot.Domain.Services.Hosted
         {
             var message = eventArgs.Message;
             var userId = message.From.Id;
-            var mappedUser = _mapper.Map<UserDbo>(message);
 
             LogMessage(message);
 
             if (!_userStorage.HasUser(userId))
             {
+                var mappedUser = _mapper.Map<UserDbo>(message);
+
                 await _userStorage.AddNewUser(mappedUser);
 
                 _eventManager.InvokeNewUser(mappedUser);
             }
-
+            
             var realUser = await _userStorage.GetUserByChatIdNoTracking(message.Chat.Id);
 
             if (message.Text.StartsWith("/"))

@@ -112,7 +112,7 @@ namespace BoyfriendBot.Domain.Services
             {
                 userDbo.UserSettings = new UserSettingsDbo
                 {
-                    RecieveReminders = false,
+                    RecieveReminders = true,
                     RecieveScheduled = true,
                     Gender = Const.Gender.Male,
                     BotGender = Const.Gender.Male

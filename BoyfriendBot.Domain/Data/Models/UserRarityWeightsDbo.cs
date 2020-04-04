@@ -14,6 +14,7 @@ namespace BoyfriendBot.Domain.Data.Models
 
         [ForeignKey("UserId")]
         public UserDbo User { get; set; }
+
         public int WhiteWeight { get; set; }
         public int GreenWeight { get; set; }
         public int BlueWeight { get; set; }
