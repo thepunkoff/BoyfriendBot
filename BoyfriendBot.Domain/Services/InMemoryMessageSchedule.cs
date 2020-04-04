@@ -87,6 +87,8 @@ namespace BoyfriendBot.Domain.Services
         {
             var keys = _scheduledMesageCache.Where(x => x.Value.ChatId == chatId).Select(x => x.Key);
 
+            var count = keys.Count();
+
             if (keys.Count() > 0)
             {
                 foreach (var key in keys)
@@ -95,7 +97,7 @@ namespace BoyfriendBot.Domain.Services
                 }
             }
 
-            _logger.LogInformation($"Removed {keys.Count()} messages from schedule.");
+            _logger.LogInformation($"Removed {count} messages from schedule.");
         }
 
         public async Task RemoveAllScheduledMessages(CancellationToken cancellationToken)

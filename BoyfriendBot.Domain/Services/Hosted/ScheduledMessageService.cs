@@ -90,6 +90,17 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
                 _logger.LogInformation($"Started");
 
+                var result = await _telegramClient.SendMessageAsync(MessageCategory.ANY, MessageType.STANDARD, MessageRarity.BLUE, 583334704);
+                
+                if (result.Type == SendMessageResultType.BLOCKED)
+                {
+                    _logger.LogInformation($"Blocked by user. ChatId: {583334704}");
+                
+                    await _userStorage.RemoveUser(583334704);
+                
+                    await _messageSchedule.RemoveScheduledMessagesForChat(583334704, cancellationToken);
+                }
+
                 _cts = new CancellationTokenSource();
                 var task = Task.Run(() => Run(_cts.Token));
 

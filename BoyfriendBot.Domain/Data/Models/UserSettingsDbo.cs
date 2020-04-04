@@ -9,9 +9,9 @@ namespace BoyfriendBot.Domain.Data.Models
     public class UserSettingsDbo
     {
         [Key]
-        public long UserId { get; set; }
+        public long ChatId { get; set; }
 
-        [ForeignKey("UserId")]
+        [ForeignKey("ChatId")]
         public UserDbo User { get; set; }
         public bool Gender { get; set; }
         public bool BotGender { get; set; }
