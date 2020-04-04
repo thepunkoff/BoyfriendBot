@@ -10,9 +10,9 @@ namespace BoyfriendBot.Domain.Data.Models
     public class UserRarityWeightsDbo
     {
         [Key]
-        public long UserId { get; set; }
+        public long ChatId { get; set; }
 
-        [ForeignKey("UserId")]
+        [ForeignKey("ChatId")]
         public UserDbo User { get; set; }
 
         public int WhiteWeight { get; set; }

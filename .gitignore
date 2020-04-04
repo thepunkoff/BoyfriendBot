@@ -1,8 +1,10 @@
 .vs
 .git
+
 /BoyfriendBot.ConsoleApp/
 /BoyfriendBot.Domain/bin/
 /BoyfriendBot.Domain/obj/
+/BoyfriendBot.Domain/Data/Scripts/
 /BoyfriendBot.WebApp/bin/
 /BoyfriendBot.WebApp/obj/
 /BoyfriendBot.WebApp/Data/

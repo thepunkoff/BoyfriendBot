@@ -145,6 +145,9 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 
                 var realUser = await _userStorage.GetUserByChatIdNoTracking(message.Chat.Id);
 
+                if (message.Text == null)
+                    _logger.LogError("FWAfawf");
+
                 if (message.Text.StartsWith("/"))
                 {
                     await _commandProcessor.ProcessCommand(message.Text.TrimStart('/'), message.Chat.Id);
@@ -163,7 +166,6 @@ namespace BoyfriendBot.Domain.Services.Hosted
             catch (Exception ex)
             {
                 _logger.LogCritical($"OnMessage: {ex.ToString()}");
-                throw;
             }
         }
 
