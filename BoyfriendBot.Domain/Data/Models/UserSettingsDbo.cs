@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace BoyfriendBot.Domain.Data.Models
@@ -9,6 +10,9 @@ namespace BoyfriendBot.Domain.Data.Models
     {
         [Key]
         public long UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public UserDbo User { get; set; }
         public bool Gender { get; set; }
         public bool BotGender { get; set; }
         public bool RecieveReminders { get; set; }

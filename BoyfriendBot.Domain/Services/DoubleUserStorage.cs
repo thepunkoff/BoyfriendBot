@@ -110,20 +110,16 @@ namespace BoyfriendBot.Domain.Services
 
             using (var context = _dbContextFactory.Create())
             {
-                context.User.Add(userDbo);
-
-                var settings = new UserSettingsDbo
+                userDbo.UserSettings = new UserSettingsDbo
                 {
-                    UserId = userDbo.UserId,
-                    RecieveReminders = true,
+                    RecieveReminders = false,
                     RecieveScheduled = true,
                     Gender = Const.Gender.Male,
                     BotGender = Const.Gender.Male
                 };
 
-                var rarityWeights = new UserRarityWeightsDbo
+                userDbo.RarityWeights = new UserRarityWeightsDbo
                 {
-                    UserId = userDbo.UserId,
                     WhiteWeight = _scheduledMessageServiceAppSettings.DefaultWhiteWeight,
                     GreenWeight = _scheduledMessageServiceAppSettings.DefaultGreenWeight,
                     BlueWeight = _scheduledMessageServiceAppSettings.DefaultBlueWeight,
@@ -131,8 +127,7 @@ namespace BoyfriendBot.Domain.Services
                     OrangeWeight = _scheduledMessageServiceAppSettings.DefaultOrangeWeight
                 };
 
-                context.UserSettings.Add(settings);
-                context.RarityWeights.Add(rarityWeights);
+                context.User.Add(userDbo);
 
                 await context.SaveChangesAsync();
             }

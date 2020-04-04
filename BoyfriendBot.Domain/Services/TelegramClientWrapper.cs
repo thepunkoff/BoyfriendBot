@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Text.Json;
 using Telegram.Bot;
 
 namespace BoyfriendBot.Domain.Services
@@ -54,7 +55,13 @@ namespace BoyfriendBot.Domain.Services
             string token = null;
             try
             {
-                token = File.ReadAllText(Path.Combine(executionPath, tokenFile));
+                var jsonText = File.ReadAllText(Path.Combine(executionPath, tokenFile));
+                var json = JsonDocument.Parse(jsonText);
+#if RELEASE
+                token = json.RootElement.GetProperty("prodToken").GetString();
+#else 
+                token = json.RootElement.GetProperty("testToken").GetString();
+#endif
             }
             catch (FileNotFoundException ex)
             {

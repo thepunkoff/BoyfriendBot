@@ -4,6 +4,7 @@ using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Hosted.Interfaces;
 using BoyfriendBot.Domain.Services.Interfaces;
+using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,6 +30,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly IMonitoringManager _monitoringManager;
         private readonly IMapper _mapper;
         private readonly IEventManager _eventManager;
+        private readonly IBotMessageProvider _botMessageProvider;
+        private readonly IRarityRoller _rarityRoller;
 
         public ListeningService(
               ITelegramBotClientWrapper telegramClientWrapper
@@ -40,6 +43,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
             , IMonitoringManager monitoringManager
             , IMapper mapper
             , IEventManager eventManager
+            , IBotMessageProvider botMessageProvider
+            , IRarityRoller rarityRoller
             )
         {
             _botClient = telegramClientWrapper.Client;
@@ -51,6 +56,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _monitoringManager = monitoringManager;
             _mapper = mapper;
             _eventManager = eventManager;
+            _botMessageProvider = botMessageProvider;
+            _rarityRoller = rarityRoller;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -96,21 +103,32 @@ namespace BoyfriendBot.Domain.Services.Hosted
         {
             var message = eventArgs.Message;
             var userId = message.From.Id;
+            var mappedUser = _mapper.Map<UserDbo>(message);
 
             LogMessage(message);
 
             if (!_userStorage.HasUser(userId))
             {
-                var mappedUser = _mapper.Map<UserDbo>(message);
-
                 await _userStorage.AddNewUser(mappedUser);
 
                 _eventManager.InvokeNewUser(mappedUser);
             }
 
+            var realUser = await _userStorage.GetUserByChatIdNoTracking(message.Chat.Id);
+
             if (message.Text.StartsWith("/"))
             {
                 await _commandProcessor.ProcessCommand(message.Text.TrimStart('/'), message.Chat.Id);
+            }
+            else
+            {
+                var responseMessage = await _botMessageProvider.GetMessage(
+                    MessageCategory.SIMPLERESPONSE,
+                    Models.MessageType.STANDARD,
+                    rarity: _rarityRoller.RollRarityForUser(realUser),
+                    message.Chat.Id);
+
+                await _botClient.SendTextMessageAsync(message.Chat.Id, responseMessage.Text);
             }
         }
 

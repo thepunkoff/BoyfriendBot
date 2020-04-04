@@ -11,10 +11,8 @@ namespace BoyfriendBot.Domain.Data.Models
         [Key]
         public long UserId { get; set; }
 
-        [ForeignKey("UserId")]
         public UserSettingsDbo UserSettings { get; set; }
 
-        [ForeignKey("UserId")]
         public UserRarityWeightsDbo RarityWeights { get; set; }
 
         public long ChatId { get; set; }

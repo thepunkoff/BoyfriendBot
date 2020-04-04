@@ -87,8 +87,6 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             _logger.LogInformation("Started");
 
-            await _telegramClient.SendMessageAsync(MessageCategory.WAKEUP, MessageType.STANDARD, MessageRarity.WHITE, 583334704);
-
             _cts = new CancellationTokenSource();
             var task = Task.Run(() => Run(_cts.Token));
 

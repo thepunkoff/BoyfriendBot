@@ -2,13 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace BoyfriendBot.Domain.Data.Models
 {
     public class UserRarityWeightsDbo
     {
-        [Key] public long UserId { get; set; }
+        [Key]
+        public long UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public UserDbo User { get; set; }
         public int WhiteWeight { get; set; }
         public int GreenWeight { get; set; }
         public int BlueWeight { get; set; }

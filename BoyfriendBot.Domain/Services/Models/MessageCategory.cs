@@ -7,6 +7,7 @@
         MORNING = 2,
         AFTERNOON = 3,
         EVENING = 4,
-        ANY = 5
+        ANY = 5,
+        SIMPLERESPONSE = 6
     }
 }

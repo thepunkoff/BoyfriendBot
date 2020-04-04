@@ -1,5 +1,6 @@
 ﻿using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -7,7 +8,6 @@ using System.Diagnostics;
 
 namespace BoyfriendBot.WebApp.Controllers
 {
-    [ApiController]
     public class BoyfriendBotController : Controller
     {
         private readonly ILogger<BoyfriendBotController> _logger;
@@ -26,8 +26,7 @@ namespace BoyfriendBot.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route("monitor")]
-        public ActionResult Monitor()
+        public IActionResult Monitor()
         {
             var monitoring = new MonitorViewModel
             {
@@ -42,11 +41,23 @@ namespace BoyfriendBot.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route("reschedule")]
-        public ActionResult Reschedule()
+        public IActionResult Reschedule()
         {
             _eventManager.InvokeRescheduleClicked();
-            return Redirect("~/monitor");
+            return RedirectToAction("Monitor");
+        }
+
+        [HttpPost]
+        public IActionResult Auth(string username, string password)
+        {
+            if (username == "admin" && password == "admin")
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

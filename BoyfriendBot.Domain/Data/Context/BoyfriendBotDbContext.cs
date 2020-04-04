@@ -30,7 +30,11 @@ namespace BoyfriendBot.Domain.Data.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+#if RELEASE
             var path = _appSettings.BoyfriendBotDatabaseAbsolutePath;
+#else
+            var path = _appSettings.BoyfriendBotDevelopmentDatabaseAbsolutePath;
+#endif
             var connectionString = $"Data Source={path}";
 
             optionsBuilder.UseSqlite(connectionString);

@@ -43,7 +43,6 @@ namespace BoyfriendBot.WebApp
                 .CreateLogger();
 
             services
-
                 // Configuration
                 .Configure<DatabaseAppSettings>(Configuration.GetSection("Database"))
                 .Configure<MessageTextProviderAppSettings>(Configuration.GetSection("MessageTextProvider"))
@@ -110,7 +109,7 @@ namespace BoyfriendBot.WebApp
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }
