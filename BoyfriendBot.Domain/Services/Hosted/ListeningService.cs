@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BoyfriendBot.Domain.AppSettings;
+using BoyfriendBot.Domain.Core;
 using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Hosted.Interfaces;
@@ -74,7 +75,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             _monitoringManager.Listening = true;
 
-            _logger.LogInformation("Started");
+            _logger.LogInformation($"[{Const.Serilog.ListeningService}] Started");
         }
 
         private async void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
@@ -96,7 +97,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             _monitoringManager.Listening = false;
 
-            _logger.LogInformation("Stopped");
+            _logger.LogInformation($"[{Const.Serilog.ListeningService}] Stopped");
         }
 
         async void OnMessage(object sender, MessageEventArgs eventArgs)
@@ -137,7 +138,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Incoming message ({message.MessageId}) from {message.From.FirstName} {message.From.LastName} ({message.From.Id})");
+            sb.AppendLine($"[{Const.Serilog.ListeningService}] Incoming message ({message.MessageId}) from {message.From.FirstName} {message.From.LastName} ({message.From.Id})");
 
             if (message.ReplyToMessage != null)
             {
@@ -147,7 +148,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 var ln = message.ReplyToMessage.From.LastName;
                 var id = message.ReplyToMessage.From.Id;
 
-                sb.AppendLine($"Replied to message ({mId}) from {fn} {ln} ({id}): \"{message.ReplyToMessage.Text}\"");
+                sb.AppendLine($"[{Const.Serilog.ListeningService}] Replied to message ({mId}) from {fn} {ln} ({id}): \"{message.ReplyToMessage.Text}\"");
             }
 
             if (message.ForwardFrom != null)
@@ -156,40 +157,40 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 var ln = message.ForwardFrom.LastName;
                 var id = message.ForwardFrom.Id;
 
-                sb.AppendLine($"Forwarded from {fn} {ln} ({id}): \"{message.Text}\"");
+                sb.AppendLine($" [{Const.Serilog.ListeningService}] Forwarded from {fn} {ln} ({id}): \"{message.Text}\"");
             }
 
             if (message.Text != null)
             {
-                sb.AppendLine($"Text: \"{message.Text}\"");
+                sb.AppendLine($"[{Const.Serilog.ListeningService}] Text: \"{message.Text}\"");
             }
             if (message.Sticker != null)
             {
-                sb.AppendLine($"Sticker: \"{message.Sticker.Emoji}\"");
+                sb.AppendLine($"[{Const.Serilog.ListeningService}] Sticker: \"{message.Sticker.Emoji}\"");
             }
             if (message.Photo != null)
             {
-                sb.AppendLine($"Picture recieved. Picture caption: \"{message.Caption}\"");
+                sb.AppendLine($"[{Const.Serilog.ListeningService}] Picture recieved. Picture caption: \"{message.Caption}\"");
             }
             if (message.Audio != null)
             {
-                sb.AppendLine($"Audio recieved. Duration: \"{message.Audio.Duration}\"");
+                sb.AppendLine($"[{Const.Serilog.ListeningService}] Audio recieved. Duration: \"{message.Audio.Duration}\"");
             }
             if (message.Voice != null)
             {
-                sb.AppendLine($"Voice recieved. Duration: \"{message.Voice.Duration}\"");
+                sb.AppendLine($"[{Const.Serilog.ListeningService}] Voice recieved. Duration: \"{message.Voice.Duration}\"");
             }
             if (message.VideoNote != null)
             {
-                sb.AppendLine($"Video note recieved. Duration: \"{message.VideoNote.Duration}\"");
+                sb.AppendLine($"[{Const.Serilog.ListeningService}] Video note recieved. Duration: \"{message.VideoNote.Duration}\"");
             }
             if (message.Venue != null)
             {
-                sb.AppendLine($"Audio recieved. Address: \"{message.Venue.Address}\"");
+                sb.AppendLine($"[{Const.Serilog.ListeningService}] Audio recieved. Address: \"{message.Venue.Address}\"");
             }
             if (message.Document != null)
             {
-                sb.AppendLine($"Document recieved. File name: \"{message.Document.FileName}\"");
+                sb.AppendLine($"[{Const.Serilog.ListeningService}] Document recieved. File name: \"{message.Document.FileName}\"");
             }
             
             var log = sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());

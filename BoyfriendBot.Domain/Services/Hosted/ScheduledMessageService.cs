@@ -56,7 +56,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _rarityRoller = rarityRoller;
             _eventManager = eventManager;
 
-            _logger.LogInformation("Initializing scheduled messaging service...");
+            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] Initializing scheduled messaging service...");
 
             // get message count from personal settings
             MessageCounts = new Dictionary<PartOfDay, int>
@@ -85,7 +85,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             await RescheduleMessages(cancellationToken);
 
-            _logger.LogInformation("Started");
+            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] Started");
 
             _cts = new CancellationTokenSource();
             var task = Task.Run(() => Run(_cts.Token));
@@ -107,7 +107,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             _monitoringManager.SchedulingMessages = false;
 
-            _logger.LogInformation("Stopped");
+            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] Stopped");
         }
 
         private async void SendWakeUpMessage(CancellationToken cancellationToken)
@@ -235,7 +235,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 }
             }
 
-            _logger.LogInformation($"{scheduledCount} special messages were scheduled.");
+            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] {scheduledCount} special messages were scheduled.");
         }
 
         private async Task ScheduleStandardMessages(CancellationToken cancellationToken)
@@ -300,7 +300,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 }
             }
 
-            _logger.LogInformation($"{scheduledCount} standard messages were scheduled. {totalOverriddenCount} of them overridden to \"ANY\" category.");
+            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] {scheduledCount} standard messages were scheduled. {totalOverriddenCount} of them overridden to \"ANY\" category.");
         }
 
         private int TryOverrideByAny(List<ScheduledMessage> messages, Random overrideRng)
@@ -327,7 +327,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 return;
             }
 
-            _logger.LogInformation("Scheduling new messages...");
+            _logger.LogInformation($"[{Const.Serilog.ScheduledMessageService}] Scheduling new messages...");
 
             await _messageSchedule.RemoveAllScheduledMessages(cancellationToken);
 
@@ -335,7 +335,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
             await ScheduleSpecialMessages(cancellationToken);
 
-            _logger.LogInformation(_messageSchedule.ToString());
+            _logger.LogInformation($"[{ Const.Serilog.ScheduledMessageService}] {_messageSchedule.ToString()}");
         }
 
         #region EventHandlers

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BoyfriendBot.Domain.AppSettings;
 using BoyfriendBot.Domain.Commands;
+using BoyfriendBot.Domain.Core;
 using BoyfriendBot.Domain.Data.Context;
 using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Infrastructure.Mapping;
@@ -38,8 +39,16 @@ namespace BoyfriendBot.WebApp
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Error)
-                .WriteTo.RollingFile("C:/Logs/BoyfriendBot/boyfriend-bot.log",
-                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
+                .WriteTo.Logger(listeningServiceLoggerConfig => listeningServiceLoggerConfig
+                    .WriteTo.RollingFile("C:/Logs/BoyfriendBot/boyfriend-bot-listeningService.log",
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
+                    .Filter.ByIncludingOnly(x => x.MessageTemplate.Text.Contains(Const.Serilog.ListeningService))
+                )
+                .WriteTo.Logger(scheduledMessageServiceLoggerConfig => scheduledMessageServiceLoggerConfig
+                    .WriteTo.RollingFile("C:/Logs/BoyfriendBot/boyfriend-bot-scheduledMessageService.log",
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
+                    .Filter.ByIncludingOnly(x => x.MessageTemplate.Text.Contains(Const.Serilog.ScheduledMessageService))
+                )
                 .CreateLogger();
 
             services
@@ -93,7 +102,6 @@ namespace BoyfriendBot.WebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -10,6 +10,11 @@ namespace BoyfriendBot.Domain.Core
         public const string ErrorMessage = "Упс, произошла какая-то ошибка.";
         public const string RedAlertMessage = "Ты мне нравишься.";
 
+        public class Serilog
+        {
+            public const string ListeningService = "LS";
+            public const string ScheduledMessageService = "SMS";
+        }
         public class Gender
         {
             public const bool Male = true;
