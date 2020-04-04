@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -37,15 +38,20 @@ namespace BoyfriendBot.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var logPath = Configuration.GetValue<string>("LoggingAbsolutePath");
+            var listeningServiceFullLogPath = Path.Combine(logPath, "boyfriend-bot-listeningService.log");
+            var generalFullLogPath = Path.Combine(logPath, "boyfriend-bot-general.log");
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Error)
+
                 .WriteTo.Logger(listeningServiceLoggerConfig => listeningServiceLoggerConfig
-                    .WriteTo.RollingFile("C:/Logs/BoyfriendBot/boyfriend-bot-listeningService.log",
+                    .WriteTo.RollingFile(listeningServiceFullLogPath,
                     outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
                     .Filter.ByIncludingOnly(x => x.MessageTemplate.Text.Contains(Const.Serilog.ListeningService))
                 )
                 .WriteTo.Logger(generalLoggerConfig => generalLoggerConfig
-                    .WriteTo.RollingFile("C:/Logs/BoyfriendBot/boyfriend-bot-general.log",
+                    .WriteTo.RollingFile(generalFullLogPath,
                     outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
                     .Filter.ByExcluding(x => x.MessageTemplate.Text.Contains(Const.Serilog.ListeningService))
                 )
