@@ -166,7 +166,9 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 return;
             }
 
-            foreach (var messageTime in await _messageSchedule.GetAllScheduledMessageTimes(cancellationToken))
+            var messageDateTimes = await _messageSchedule.GetAllScheduledMessageTimes(cancellationToken);
+
+            foreach (var messageTime in messageDateTimes)
             {
                 var now = DateTime.Now;
 

@@ -3,9 +3,14 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 
-<h1>BoyfriendBot v.0.0.1</h1>
+<h1>BoyfriendBot v.@(ViewBag.Version)</h1>
 <p>@Model.Description</p>
 <p>(@Model.Uptime)</p>
+
+@{
+    var listeningColor = Model.Listening ? "#0bb602" : "#e31902";
+    var schedulingMessagesColor = Model.SchedulingMessages ? "#0bb602" : "#e31902";
+}
 
 <table>
     <tr>
@@ -14,11 +19,11 @@
     </tr>
     <tr>
         <td>Listening</td>
-        <td>@Model.Listening</td>
+        <td><span style="color:@listeningColor">@Model.Listening</span></td>
     </tr>
     <tr>
         <td>Scheduling messages</td>
-        <td>@Model.SchedulingMessages</td>
+        <td><span style="color:@schedulingMessagesColor">@Model.SchedulingMessages</span></td>
     </tr>
 </table>
 

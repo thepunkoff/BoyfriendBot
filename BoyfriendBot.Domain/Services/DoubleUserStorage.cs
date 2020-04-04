@@ -35,6 +35,14 @@ namespace BoyfriendBot.Domain.Services
             
         }
 
+        public int GetTotalUsers()
+        {
+            using (var context = _dbContextFactory.Create())
+            {
+                return context.User.Count();
+            }
+        }
+
         public async Task<UserDbo> GetUserByChatIdNoTracking(long chatId)
         {
             using (var context = _dbContextFactory.Create())

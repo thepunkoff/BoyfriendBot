@@ -8,6 +8,5 @@ namespace BoyfriendBot.Domain.Services.Interfaces
     {
         public bool Listening { get; set; }
         public bool SchedulingMessages { get; set; }
-        int GetTotalUsers();
     }
 }
