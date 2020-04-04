@@ -83,6 +83,21 @@ namespace BoyfriendBot.Domain.Services
             _scheduledMesageCache.Remove(dateTime);
         }
 
+        public async Task RemoveScheduledMessagesForChat(long chatId, CancellationToken cancellationToken)
+        {
+            var keys = _scheduledMesageCache.Where(x => x.Value.ChatId == chatId).Select(x => x.Key);
+
+            if (keys.Count() > 0)
+            {
+                foreach (var key in keys)
+                {
+                    await RemoveScheduledMessage(key, cancellationToken);
+                }
+            }
+
+            _logger.LogInformation($"Removed {keys.Count()} messages from schedule.");
+        }
+
         public async Task RemoveAllScheduledMessages(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)

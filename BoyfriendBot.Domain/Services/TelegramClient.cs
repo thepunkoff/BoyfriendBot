@@ -1,10 +1,10 @@
 ﻿using BoyfriendBot.Domain.Core;
+using BoyfriendBot.Domain.Infrastructure.ResultProcessing;
 using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Logging;
-using System.IO;
 using System.Threading.Tasks;
-using Telegram.Bot.Types.InputFiles;
+using Telegram.Bot.Exceptions;
 
 namespace BoyfriendBot.Domain.Services
 {
@@ -26,7 +26,7 @@ namespace BoyfriendBot.Domain.Services
             _logger = logger;
         }
 
-        public async Task SendMessageAsync(MessageCategory category, MessageType type, MessageRarity rarity, long chatId)
+        public async Task<SendMessageResult> SendMessageAsync(MessageCategory category, MessageType type, MessageRarity rarity, long chatId)
         {
             var redalertMessage = false;
 
@@ -38,13 +38,28 @@ namespace BoyfriendBot.Domain.Services
                 redalertMessage = true;
             }
 
-            if (message.ImageUrl == null)
+            try
             {
-                await _telegramBotClientWrapper.Client.SendTextMessageAsync(chatId, message.Text);
+                if (message.ImageUrl == null)
+                {
+                    await _telegramBotClientWrapper.Client.SendTextMessageAsync(chatId, message.Text);
+                }
+                else
+                {
+                    await _telegramBotClientWrapper.Client.SendPhotoAsync(chatId, message.ImageUrl, caption: message.Text);
+                }
             }
-            else
+            catch (ApiRequestException ex)
             {
-                await _telegramBotClientWrapper.Client.SendPhotoAsync(chatId, message.ImageUrl, caption: message.Text);
+                if (ex.Message.Contains("blocked"))
+                {
+                    var result = SendMessageResult.CreateBlocked();
+                    return result;
+                }
+
+                _logger.LogError(ex.ToString());
+
+                return SendMessageResult.CreateUnknown();
             }
 
             if (redalertMessage)
@@ -59,6 +74,8 @@ namespace BoyfriendBot.Domain.Services
                             $"Type: {type}, " +
                             $"Rarity: {rarity}.");
             }
+
+            return SendMessageResult.CreateSuccess();
         }
     }
 }

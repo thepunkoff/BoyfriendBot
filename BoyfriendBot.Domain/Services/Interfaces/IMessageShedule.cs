@@ -11,6 +11,7 @@ namespace BoyfriendBot.Domain.Services.Interfaces
     {
         Task AddScheduledMessage(ScheduledMessage message, CancellationToken cancellationToken);
         Task AddScheduledMessageRange(IEnumerable<ScheduledMessage> messages, CancellationToken cancellationToken);
+        Task RemoveScheduledMessagesForChat(long chatId, CancellationToken cancellationToken);
         Task RemoveScheduledMessage(DateTime dateTime, CancellationToken cancellationToken);
         Task RemoveAllScheduledMessages(CancellationToken cancellationToken);
         Task<List<DateTime>> GetAllScheduledMessageTimes(CancellationToken cancellationToken);

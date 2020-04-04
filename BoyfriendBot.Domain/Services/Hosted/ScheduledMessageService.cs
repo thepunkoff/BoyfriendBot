@@ -2,6 +2,7 @@
 using BoyfriendBot.Domain.Core;
 using BoyfriendBot.Domain.Core.Extensions;
 using BoyfriendBot.Domain.Data.Models;
+using BoyfriendBot.Domain.Infrastructure.ResultProcessing;
 using BoyfriendBot.Domain.Services.Hosted.Interfaces;
 using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
@@ -192,13 +193,24 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 {
                     var message = await _messageSchedule.GetScheduledMessage(messageTime, cancellationToken);
 
-                    await _telegramClient.SendMessageAsync(
+                    var result = await _telegramClient.SendMessageAsync(
                         category: Enum.Parse<MessageCategory>(messageTime.PartOfDay().Name.ToUpperInvariant()),
                         message.Type,
                         message.Rarity,
                         message.ChatId);
                     
                     await _messageSchedule.RemoveScheduledMessage(messageTime, cancellationToken);
+
+                    if (result.Type == SendMessageResultType.BLOCKED)
+                    {
+                        _logger.LogInformation($"Blocked by user. ChatId: {message.ChatId}");
+
+                        await _userStorage.RemoveUser(message.ChatId);
+
+                        await _messageSchedule.RemoveScheduledMessagesForChat(message.ChatId, cancellationToken);
+
+                        return;
+                    }
                 }
             }
         }

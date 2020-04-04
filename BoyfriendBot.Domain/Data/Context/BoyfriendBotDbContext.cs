@@ -26,7 +26,23 @@ namespace BoyfriendBot.Domain.Data.Context
         public DbSet<UserSettingsDbo> UserSettings { get; set; }
         public DbSet<UserRarityWeightsDbo> RarityWeights { get; set; }
         public DbSet<ScheduledMessageDbo> MessageSchedule { get; set; }
-        
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserDbo>().HasKey(x => x.UserId);
+
+            modelBuilder.Entity<UserDbo>()
+                .HasOne(x => x.UserSettings)
+                .WithOne(y => y.User)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder
+                .Entity<UserDbo>()
+                .HasOne(x => x.RarityWeights)
+                .WithOne(y => y.User)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
