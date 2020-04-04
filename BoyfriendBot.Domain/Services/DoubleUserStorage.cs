@@ -4,6 +4,7 @@ using BoyfriendBot.Domain.Data.Context.Interfaces;
 using BoyfriendBot.Domain.Data.Models;
 using BoyfriendBot.Domain.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -14,15 +15,18 @@ namespace BoyfriendBot.Domain.Services
 {
     public class DoubleUserStorage : IUserStorage
     {
+        private readonly ILogger<DoubleUserStorage> _logger;
         private readonly ScheduledMessageServiceAppSettings _scheduledMessageServiceAppSettings;
         private readonly IBoyfriendBotDbContextFactory _dbContextFactory;
         private Dictionary<long, long> _userCache = new Dictionary<long, long>();
 
         public DoubleUserStorage(
-              IOptions<ScheduledMessageServiceAppSettings> appSettings
+              ILogger<DoubleUserStorage> logger
+            ,  IOptions<ScheduledMessageServiceAppSettings> appSettings
             , IBoyfriendBotDbContextFactory dbContextFactory
             )
         {
+            _logger = logger;
             _scheduledMessageServiceAppSettings = appSettings.Value;
             _dbContextFactory = dbContextFactory;
 
@@ -32,7 +36,6 @@ namespace BoyfriendBot.Domain.Services
 
                 dbos.ForEach(x => _userCache.Add(x.UserId, x.ChatId));
             }
-            
         }
 
         public int GetTotalUsers()
@@ -139,6 +142,26 @@ namespace BoyfriendBot.Domain.Services
 
                 await context.SaveChangesAsync();
             }
+        }
+
+        public async Task RemoveUser(long chatId)
+        {
+            _userCache.Remove(chatId);
+
+            using (var context = _dbContextFactory.Create())
+            {
+                var userDbo = context.User
+                    .Include(x => x.UserSettings)
+                    .Include(x => x.RarityWeights)
+                    .Where(x => x.ChatId == chatId)
+                    .FirstOrDefault();
+
+                context.User.Remove(userDbo);
+
+                await context.SaveChangesAsync();
+            }
+
+            _logger.LogInformation($"User removed. ChatId: {chatId}");
         }
     }
 }

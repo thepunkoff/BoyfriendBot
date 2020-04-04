@@ -101,9 +101,9 @@ namespace BoyfriendBot.Domain.Services
                 message.ImageUrl = await _randomImageProvider.GetRandomImageUrl(xMessage.Attribute("image").Value);
             }
 
-            if (xMessage.Attribute("imagerant") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("image").Value))
+            if (xMessage.Attribute("imagerant") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("imagerant").Value))
             {
-                var searchQuery = _messageTextTransformer.ExecuteRant(xMessage.Attribute("image").Value, gender, botGender);
+                var searchQuery = _messageTextTransformer.ExecuteRant(xMessage.Attribute("imagerant").Value, gender, botGender);
                 message.ImageUrl = await _randomImageProvider.GetRandomImageUrl(searchQuery);
             }
 
