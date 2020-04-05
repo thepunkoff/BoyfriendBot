@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Этот файл используется процессом публикации или упаковки вашего веб-проекта. Можно настроить поведение этого процесса,
+изменив этот файл MSBuild. Подробности см. на странице https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA9fiDBMu5q06opxHL0F3NRAAAAAACAAAAAAAQZgAAAAEAACAAAACZUiIorrDQebHcZ1wP6Z5gAIbSXiluq/HPeUINJoupggAAAAAOgAAAAAIAACAAAAAmWgoO7bT34ExkLqIApnH7alGjjS/tQ2zOXLRq3IsKgYAAAADYpSbEuhyoTCTH0c0lDEyxl5MPNN9/OcjLtg82Kdv5wxpRYj/CFNnof/eO4wARd5IzonBTQnsJjBiZ/bmP+KYyvtUAPslZUO2U7OdoPDb4SWkkIzlDee2Kq7cjDgNYlvak0u5b36INaOnQuRsw7fG9JBtyOqI9R+rlhDxNKgaymEAAAAAb3XtWZ6tCzWMcVBUk6BnrRzSoGNmZS/pAn28LxxfspJY6cXg8YPG1UOUskLDOzi4X9a6E6fLKIe8JYX1cdGzW</EncryptedPassword>
+    <_PublishTargetUrl>ftp://waws-prod-hk1-031.ftp.azurewebsites.windows.net/site/wwwroot</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="AngleSharp.dll">
+      <publishTime>03/31/2020 20:43:18</publishTime>
+    </File>
+    <File Include="appsettings.Development.json">
+      <publishTime>02/19/2020 21:37:40</publishTime>
+    </File>
+    <File Include="appsettings.json">
+      <publishTime>04/04/2020 20:44:33</publishTime>
+    </File>
+    <File Include="AutoMapper.dll">
+      <publishTime>08/12/2019 12:42:04</publishTime>
+    </File>
+    <File Include="AutoMapper.Extensions.Microsoft.DependencyInjection.dll">
+      <publishTime>08/12/2019 13:19:42</publishTime>
+    </File>
+    <File Include="BoyfriendBot.Domain.dll">
+      <publishTime>04/05/2020 01:34:15</publishTime>
+    </File>
+    <File Include="BoyfriendBot.Domain.pdb">
+      <publishTime>04/05/2020 01:34:15</publishTime>
+    </File>
+    <File Include="BoyfriendBot.WebApp.deps.json">
+      <publishTime>04/05/2020 03:08:15</publishTime>
+    </File>
+    <File Include="BoyfriendBot.WebApp.dll">
+      <publishTime>04/05/2020 03:08:12</publishTime>
+    </File>
+    <File Include="BoyfriendBot.WebApp.exe">
+      <publishTime>04/05/2020 03:08:12</publishTime>
+    </File>
+    <File Include="BoyfriendBot.WebApp.pdb">
+      <publishTime>04/05/2020 03:08:12</publishTime>
+    </File>
+    <File Include="BoyfriendBot.WebApp.runtimeconfig.json">
+      <publishTime>04/05/2020 01:34:18</publishTime>
+    </File>
+    <File Include="BoyfriendBot.WebApp.Views.dll">
+      <publishTime>04/05/2020 03:08:14</publishTime>
+    </File>
+    <File Include="BoyfriendBot.WebApp.Views.pdb">
+      <publishTime>04/05/2020 03:08:14</publishTime>
+    </File>
+    <File Include="Data/dialogMenus.json">
+      <publishTime>04/02/2020 22:40:51</publishTime>
+    </File>
+    <File Include="Data/messages.xml">
+      <publishTime>04/03/2020 01:30:58</publishTime>
+    </File>
+    <File Include="Data/proxyAppSettings.json">
+      <publishTime>03/27/2020 18:09:40</publishTime>
+    </File>
+    <File Include="Data/Rant/rantionary-rus-1.0.0.rantpkg">
+      <publishTime>04/01/2020 22:18:18</publishTime>
+    </File>
+    <File Include="Data/token.json">
+      <publishTime>04/04/2020 16:17:40</publishTime>
+    </File>
+    <File Include="Microsoft.Bcl.AsyncInterfaces.dll">
+      <publishTime>11/15/2019 08:38:02</publishTime>
+    </File>
+    <File Include="Microsoft.Bcl.HashCode.dll">
+      <publishTime>11/15/2019 08:38:50</publishTime>
+    </File>
+    <File Include="Microsoft.Data.Sqlite.dll">
+      <publishTime>01/18/2020 04:44:38</publishTime>
+    </File>
+    <File Include="Microsoft.DotNet.PlatformAbstractions.dll">
+      <publishTime>01/17/2020 21:24:30</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Abstractions.dll">
+      <publishTime>01/18/2020 04:44:18</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.dll">
+      <publishTime>01/18/2020 04:44:38</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Relational.dll">
+      <publishTime>01/18/2020 04:44:46</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Sqlite.dll">
+      <publishTime>01/18/2020 04:44:56</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Caching.Abstractions.dll">
+      <publishTime>01/18/2020 03:30:40</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Caching.Memory.dll">
+      <publishTime>01/18/2020 03:30:56</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Configuration.Abstractions.dll">
+      <publishTime>01/18/2020 03:31:04</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Configuration.Binder.dll">
+      <publishTime>01/18/2020 03:31:28</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Configuration.dll">
+      <publishTime>01/18/2020 03:31:12</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.DependencyInjection.Abstractions.dll">
+      <publishTime>01/18/2020 03:31:16</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.DependencyInjection.dll">
+      <publishTime>01/18/2020 03:31:12</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.DependencyModel.dll">
+      <publishTime>01/17/2020 21:24:28</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Logging.Abstractions.dll">
+      <publishTime>01/18/2020 03:32:22</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Logging.dll">
+      <publishTime>01/18/2020 03:32:22</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Options.dll">
+      <publishTime>01/18/2020 03:31:12</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Primitives.dll">
+      <publishTime>01/18/2020 03:31:54</publishTime>
+    </File>
+    <File Include="Newtonsoft.Json.dll">
+      <publishTime>08/01/2019 23:47:12</publishTime>
+    </File>
+    <File Include="Rant.dll">
+      <publishTime>02/10/2019 18:13:14</publishTime>
+    </File>
+    <File Include="runtimes/alpine-x64/native/libe_sqlite3.so">
+      <publishTime>05/28/2019 15:03:36</publishTime>
+    </File>
+    <File Include="runtimes/linux-arm/native/libe_sqlite3.so">
+      <publishTime>05/28/2019 15:04:10</publishTime>
+    </File>
+    <File Include="runtimes/linux-arm64/native/libe_sqlite3.so">
+      <publishTime>05/28/2019 15:03:52</publishTime>
+    </File>
+    <File Include="runtimes/linux-armel/native/libe_sqlite3.so">
+      <publishTime>05/28/2019 15:04:26</publishTime>
+    </File>
+    <File Include="runtimes/linux-musl-x64/native/libe_sqlite3.so">
+      <publishTime>05/28/2019 15:03:36</publishTime>
+    </File>
+    <File Include="runtimes/linux-x64/native/libe_sqlite3.so">
+      <publishTime>05/28/2019 15:03:08</publishTime>
+    </File>
+    <File Include="runtimes/linux-x86/native/libe_sqlite3.so">
+      <publishTime>05/28/2019 15:03:22</publishTime>
+    </File>
+    <File Include="runtimes/osx-x64/native/libe_sqlite3.dylib">
+      <publishTime>05/28/2019 15:30:42</publishTime>
+    </File>
+    <File Include="runtimes/win-arm/native/e_sqlite3.dll">
+      <publishTime>08/15/2019 18:14:08</publishTime>
+    </File>
+    <File Include="runtimes/win-arm64/native/e_sqlite3.dll">
+      <publishTime>08/15/2019 18:14:28</publishTime>
+    </File>
+    <File Include="runtimes/win-x64/native/e_sqlite3.dll">
+      <publishTime>08/15/2019 18:13:54</publishTime>
+    </File>
+    <File Include="runtimes/win-x86/native/e_sqlite3.dll">
+      <publishTime>08/15/2019 18:13:34</publishTime>
+    </File>
+    <File Include="Serilog.AspNetCore.dll">
+      <publishTime>11/12/2019 02:44:46</publishTime>
+    </File>
+    <File Include="Serilog.dll">
+      <publishTime>10/13/2019 21:02:44</publishTime>
+    </File>
+    <File Include="Serilog.Enrichers.Environment.dll">
+      <publishTime>03/08/2019 21:45:14</publishTime>
+    </File>
+    <File Include="Serilog.Extensions.Hosting.dll">
+      <publishTime>08/27/2019 21:30:30</publishTime>
+    </File>
+    <File Include="Serilog.Extensions.Logging.dll">
+      <publishTime>08/21/2019 23:09:16</publishTime>
+    </File>
+    <File Include="Serilog.Formatting.Compact.dll">
+      <publishTime>07/05/2016 02:28:44</publishTime>
+    </File>
+    <File Include="Serilog.Settings.Configuration.dll">
+      <publishTime>06/02/2019 00:57:40</publishTime>
+    </File>
+    <File Include="Serilog.Sinks.Console.dll">
+      <publishTime>10/22/2017 16:48:40</publishTime>
+    </File>
+    <File Include="Serilog.Sinks.Debug.dll">
+      <publishTime>03/21/2018 21:19:06</publishTime>
+    </File>
+    <File Include="Serilog.Sinks.File.dll">
+      <publishTime>10/17/2019 05:25:34</publishTime>
+    </File>
+    <File Include="Serilog.Sinks.RollingFile.dll">
+      <publishTime>01/03/2017 03:05:26</publishTime>
+    </File>
+    <File Include="SQLitePCLRaw.batteries_v2.dll">
+      <publishTime>11/01/2019 17:24:10</publishTime>
+    </File>
+    <File Include="SQLitePCLRaw.core.dll">
+      <publishTime>11/01/2019 17:23:34</publishTime>
+    </File>
+    <File Include="SQLitePCLRaw.nativelibrary.dll">
+      <publishTime>11/01/2019 17:23:32</publishTime>
+    </File>
+    <File Include="SQLitePCLRaw.provider.dynamic_cdecl.dll">
+      <publishTime>11/01/2019 17:23:56</publishTime>
+    </File>
+    <File Include="System.Text.Json.dll">
+      <publishTime>01/17/2020 18:42:32</publishTime>
+    </File>
+    <File Include="Telegram.Bot.dll">
+      <publishTime>04/02/2020 12:11:54</publishTime>
+    </File>
+    <File Include="web.config">
+      <publishTime>04/05/2020 03:08:24</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

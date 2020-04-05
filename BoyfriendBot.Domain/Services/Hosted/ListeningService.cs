@@ -24,41 +24,35 @@ namespace BoyfriendBot.Domain.Services.Hosted
     {
         private readonly TelegramBotClient _botClient;
         private readonly ILogger<ListeningService> _logger;
-        private readonly IBoyfriendBotDbContextFactory _dbContextFactory;
         private readonly ICommandProcessor _commandProcessor;
         private readonly IUserStorage _userStorage;
         private readonly ListeningServiceAppSettings _appSettings;
         private readonly IMonitoringManager _monitoringManager;
         private readonly IMapper _mapper;
         private readonly IEventManager _eventManager;
-        private readonly IBotMessageProvider _botMessageProvider;
-        private readonly IRarityRoller _rarityRoller;
+        private readonly IInputProcessor _inputProcessor;
 
         public ListeningService(
               ITelegramBotClientWrapper telegramClientWrapper
             , ILogger<ListeningService> logger
-            , IBoyfriendBotDbContextFactory dbContextFactory
             , ICommandProcessor commandProcessor
             , IUserStorage userCache
             , IOptions<ListeningServiceAppSettings> appSettings
             , IMonitoringManager monitoringManager
             , IMapper mapper
             , IEventManager eventManager
-            , IBotMessageProvider botMessageProvider
-            , IRarityRoller rarityRoller
+            , IInputProcessor inputProcessor
             )
         {
             _botClient = telegramClientWrapper.Client;
             _logger = logger;
-            _dbContextFactory = dbContextFactory;
             _commandProcessor = commandProcessor;
             _userStorage = userCache;
             _appSettings = appSettings.Value;
             _monitoringManager = monitoringManager;
             _mapper = mapper;
             _eventManager = eventManager;
-            _botMessageProvider = botMessageProvider;
-            _rarityRoller = rarityRoller;
+            _inputProcessor = inputProcessor;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -143,25 +137,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
                     _eventManager.InvokeNewUser(mappedUser);
                 }
                 
-                var realUser = await _userStorage.GetUserByChatIdNoTracking(message.Chat.Id);
-
-                if (message.Text == null)
-                    _logger.LogError("FWAfawf");
-
-                if (message.Text.StartsWith("/"))
-                {
-                    await _commandProcessor.ProcessCommand(message.Text.TrimStart('/'), message.Chat.Id);
-                }
-                else
-                {
-                    var responseMessage = await _botMessageProvider.GetMessage(
-                        MessageCategory.SIMPLERESPONSE,
-                        Models.MessageType.STANDARD,
-                        rarity: _rarityRoller.RollRarityForUser(realUser),
-                        message.Chat.Id);
-
-                    await _botClient.SendTextMessageAsync(message.Chat.Id, responseMessage.Text);
-                }
+                await _inputProcessor.ProcessUserInput(message.Text, message.Chat.Id);
             }
             catch (Exception ex)
             {
