@@ -13,29 +13,26 @@ namespace BoyfriendBot.Domain.Services
 {
     public class MessageTextTransformer : IMessageTextTransformer
     {
-        private readonly MessageTextProviderAppSettings _appSettings;
         private readonly ILogger<MessageTextTransformer> _logger;
+        private readonly IResourceManager _resourceManager;
+        private readonly IRandomFactGenerator _randomFactGenerator;
 
         private RantEngine _rant;
-        private readonly IRandomFactGenerator _randomFactGenerator;
 
         private const string FactMark = "@fact@";
 
         public MessageTextTransformer(
               ILogger<MessageTextTransformer> logger
-            , IOptions<MessageTextProviderAppSettings> appSettings
             , IRandomFactGenerator randomFactGenerator
+            , IResourceManager resourceManager
             )
         {
             _randomFactGenerator = randomFactGenerator;
-
-            _appSettings = appSettings.Value;
-            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-            var rantPackagePath = Path.Combine(executionPath, _appSettings.RelativeRantPackagePath);
+            _resourceManager = resourceManager;
 
             _logger = logger;
             _rant = new RantEngine();
-            _rant.LoadPackage(rantPackagePath);
+            _rant.LoadPackage(_resourceManager.GetRantPackagePath());
         }
 
         public string ExecuteRant(string rawMessage, bool gender, bool botGender)

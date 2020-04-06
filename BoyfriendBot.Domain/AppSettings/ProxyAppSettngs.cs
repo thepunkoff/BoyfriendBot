@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BoyfriendBot.Domain.AppSettings
 {
-    public class ProxyAppSettngs
+    public class ProxySettngs
     {
         public string Ip { get; set; }
 

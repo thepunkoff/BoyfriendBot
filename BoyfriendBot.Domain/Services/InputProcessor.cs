@@ -11,43 +11,53 @@ namespace BoyfriendBot.Domain.Services
     public class InputProcessor : IInputProcessor
     {
         private readonly ICommandProcessor _commandProcessor;
-        private readonly TelegramBotClient _botClient;
+        private readonly ITelegramClient _telegramClient;
         private readonly IUserStorage _userStorage;
         private readonly IBotMessageProvider _botMessageProvider;
         private readonly IRarityRoller _rarityRoller;
+        private readonly IStringAnalyzer _stringAnalyzer;
 
         public InputProcessor(
               ICommandProcessor commandProcessor
-            , TelegramBotClient botClient
+            , ITelegramClient telegramClient
             , IUserStorage userStorage
             , IBotMessageProvider botMessageProvider
             , IRarityRoller rarityRoller
+            , IStringAnalyzer stringAnalyzer
             )
         {
             _commandProcessor = commandProcessor;
-            _botClient = botClient;
+            _telegramClient = telegramClient;
             _userStorage = userStorage;
             _botMessageProvider = botMessageProvider;
             _rarityRoller = rarityRoller;
+            _stringAnalyzer = stringAnalyzer;
         }
 
         public async Task ProcessUserInput(string userInput, long chatId)
         {
-            var realUser = await _userStorage.GetUserByChatIdNoTracking(chatId);
-
-            if (userInput.StartsWith("/"))
+            if (_stringAnalyzer.IsMatch(userInput, MatchCategory.COMMAND))
             {
                 await _commandProcessor.ProcessCommand(userInput.TrimStart('/'), chatId);
             }
+            else if (_stringAnalyzer.IsMatch(userInput.ToLowerInvariant(), MatchCategory.SELFIE_REQUEST))
+            {
+                await _telegramClient.SendMessageAsync(
+                    category: MessageCategory.ANY,
+                    type: MessageType.STANDARD,
+                    //rarity: await _rarityRoller.RollRarityForUser(chatId),
+                    rarity: MessageRarity.BLUE,
+                    chatId
+                    );
+            }
             else
             {
-                var responseMessage = await _botMessageProvider.GetMessage(
+                await _telegramClient.SendMessageAsync(
                     category: MessageCategory.SIMPLERESPONSE,
                     type: MessageType.STANDARD,
-                    rarity: _rarityRoller.RollRarityForUser(realUser),
-                    chatId);
-
-                await _botClient.SendTextMessageAsync(chatId, responseMessage.Text);
+                    rarity: await _rarityRoller.RollRarityForUser(chatId),
+                    chatId
+                    );
             }
         }
     }

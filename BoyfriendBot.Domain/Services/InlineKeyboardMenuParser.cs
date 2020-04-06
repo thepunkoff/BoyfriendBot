@@ -15,20 +15,18 @@ namespace BoyfriendBot.Domain.Services
 {
     public class InlineKeyboardMenuParser : IInlineKeyboardMenuParser
     {
-        private readonly InlineKeyboardMenuParserAppSettings _appSettings;
+        private readonly IResourceManager _resourceManager;
 
-        public InlineKeyboardMenuParser(IOptions<InlineKeyboardMenuParserAppSettings> appSettings)
+        public InlineKeyboardMenuParser(
+             IResourceManager resourceManager
+            )
         {
-            _appSettings = appSettings.Value;
+            _resourceManager = resourceManager;
         }
 
         public InlineKeyboardMenu Parse(string menuId)
         {
-            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-
-            var json = File.ReadAllText(Path.Combine(executionPath, _appSettings.MenusJsonRelativePath));
-
-            var jDoc = JsonDocument.Parse(json);
+            var jDoc = _resourceManager.GetMenusDoc();
 
             var menus = jDoc.RootElement.GetProperty("Dialogs")[0].GetProperty("Menus");
 

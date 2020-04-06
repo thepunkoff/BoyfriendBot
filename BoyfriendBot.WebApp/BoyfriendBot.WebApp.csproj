@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>BoyfriendBot.WebApp</AssemblyName>
-    <Version>0.0.1.2</Version>
+    <Version>0.0.2.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,6 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\matchCategoryPatterns.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Data\messages.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

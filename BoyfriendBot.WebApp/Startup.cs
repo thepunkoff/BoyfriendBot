@@ -60,11 +60,10 @@ namespace BoyfriendBot.WebApp
             services
                 // Configuration
                 .Configure<DatabaseAppSettings>(Configuration.GetSection("Database"))
-                .Configure<MessageTextProviderAppSettings>(Configuration.GetSection("MessageTextProvider"))
                 .Configure<ScheduledMessageServiceAppSettings>(Configuration.GetSection("ScheduledMessageService"))
                 .Configure<ListeningServiceAppSettings>(Configuration.GetSection("ListeningService"))
                 .Configure<DateTimeGeneratorAppSettings>(Configuration.GetSection("DateTimeGenerator"))
-                .Configure<InlineKeyboardMenuParserAppSettings>(Configuration.GetSection("InlineKeyboardMenuParser"))
+                .Configure<ResourceManagerAppSettings>(Configuration.GetSection("ResourceManager"))
                 
                 .AddSingleton(Configuration)
 
@@ -83,12 +82,15 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<IMessageSchedule, InMemoryMessageSchedule>()
                 .AddTransient<IRarityRoller, RarityRoller>()
                 .AddSingleton<IEventManager, EventManager>()
-                .AddSingleton<IInlineKeyboardMenuParser, InlineKeyboardMenuParser>()
-                .AddSingleton<IMessageTextTransformer, MessageTextTransformer>()
-                .AddSingleton<IRandomFactGenerator, RandstuffruRandomFactGenerator>()
-                .AddSingleton<IRandomImageProvider, YandexRandomImageProvider>()
+                .AddTransient<IInlineKeyboardMenuParser, InlineKeyboardMenuParser>()
+                .AddTransient<IMessageTextTransformer, MessageTextTransformer>()
+                .AddTransient<IRandomFactGenerator, RandstuffruRandomFactGenerator>()
+                .AddTransient<IRandomImageProvider, YandexRandomImageProvider>()
+                .AddTransient<IInputProcessor, InputProcessor>()
+                .AddTransient<IStringAnalyzer, StringAnalyzer>()
+                .AddTransient<IExpressionBuilder, ExpressionBuilder>()
+                .AddTransient<IResourceManager, ResourceManager>()
                 
-
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)
                 .AddTransient<IBoyfriendBotDbContextFactory, BoyfriendBotDbContextFactory>()

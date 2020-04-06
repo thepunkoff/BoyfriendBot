@@ -20,6 +20,7 @@ namespace BoyfriendBot.Domain.Services
         private readonly IMessageTextTransformer _messageTextTransformer;
         private readonly IUserStorage _userStorage;
         private readonly IRandomImageProvider _randomImageProvider;
+        private readonly IResourceManager _resourceManager;
 
         public BotMessageProvider(
               IOptions<MessageTextProviderAppSettings> appSettings
@@ -27,6 +28,7 @@ namespace BoyfriendBot.Domain.Services
             , IMessageTextTransformer messageTextTransformer
             , IUserStorage userStorage
             , IRandomImageProvider randomImageProvider
+            , IResourceManager resourceManager
             )
         {
             _appSettings = appSettings.Value;
@@ -34,11 +36,12 @@ namespace BoyfriendBot.Domain.Services
             _messageTextTransformer = messageTextTransformer;
             _userStorage = userStorage;
             _randomImageProvider = randomImageProvider;
+            _resourceManager = resourceManager;
         }
 
         public async Task<BotMessage> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity, long chatId)
         {
-            var xDoc = GetXDoc();
+            var xDoc = _resourceManager.GetMessagesDoc();
 
             var categoryString = category.ToString().ToLowerInvariant();
             var typeString = type.ToString().ToLowerInvariant();
@@ -84,10 +87,8 @@ namespace BoyfriendBot.Domain.Services
                 message.Text = await _messageTextTransformer.ExecuteInsert(xMessage.Attribute("insert").Value, message.Text);
             }
 
-            var rantOn = false;
             if (xMessage.Attribute("rant") != null && xMessage.Attribute("rant").Value == "true")
             {
-                rantOn = true;
                 message.Text = _messageTextTransformer.ExecuteRant(message.Text, gender, botGender);
             }
 
@@ -109,31 +110,5 @@ namespace BoyfriendBot.Domain.Services
 
             return message;
         }
-
-        private XDocument GetXDoc()
-        {
-            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-            var path = Path.Combine(executionPath, _appSettings.RelativeFilePath);
-
-            FileStream file = null;
-            try
-            {
-                file = File.Open(path, FileMode.Open);
-            }
-            catch (FileNotFoundException ex)
-            {
-                _logger.LogError(ex.ToString());
-                throw;
-            }
-
-            XDocument xDoc = null;
-            using (file)
-            {
-                xDoc = XDocument.Load(file);
-            }
-
-            return xDoc;
-        }
-
     }
 }

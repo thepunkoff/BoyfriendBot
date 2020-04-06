@@ -15,84 +15,21 @@ namespace BoyfriendBot.Domain.Services
     public class TelegramBotClientWrapper : ITelegramBotClientWrapper
     {
         private readonly ILogger<TelegramBotClientWrapper> _logger;
-        private IConfiguration Configuration { get; set; }
+        private readonly IResourceManager _recourceManager;
         public  TelegramBotClient Client { get; set; }
 
         public TelegramBotClientWrapper(
-              IConfiguration configuration
-            , ILogger<TelegramBotClientWrapper> logger
+              ILogger<TelegramBotClientWrapper> logger
+            , IResourceManager resourceManager
             )
         {
             _logger = logger;
+            _recourceManager = resourceManager;
 
-            Configuration = configuration;
-
-            var proxyAppSettings = GetProxyAppSettings();
-
-            var ip = proxyAppSettings.Ip;
-            var port = proxyAppSettings.Port;
-            var username = proxyAppSettings.Username;
-            var password = proxyAppSettings.Password;
-
-            var useDefaultCredentials = string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password);
-
-            var proxy = new WebProxy
-            {
-                Address = new Uri($"http://{ip}:{port}"),
-                UseDefaultCredentials = useDefaultCredentials
-            };
-
-            // wtf? inline не срабатывало
-            proxy.Credentials = new NetworkCredential()
-            {
-                UserName = username,
-                Password = password
-            };
-
-            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-            var tokenFile = Configuration.GetValue<string>("BotTokenRelativePath");
-
-            string token = null;
-            try
-            {
-                var jsonText = File.ReadAllText(Path.Combine(executionPath, tokenFile));
-                var json = JsonDocument.Parse(jsonText);
-#if RELEASE
-                token = json.RootElement.GetProperty("prodToken").GetString();
-#else 
-                token = json.RootElement.GetProperty("testToken").GetString();
-#endif
-            }
-            catch (FileNotFoundException ex)
-            {
-                _logger.LogError(ex.ToString());
-                throw;
-            }
+            var token = _recourceManager.GetBotToken();
+            var proxy = _recourceManager.GetProxy();
 
             Client = new TelegramBotClient(token, proxy);
-        }
-
-
-        private ProxyAppSettngs GetProxyAppSettings()
-        {
-            var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-            var proxyJsonPath = Configuration.GetValue<string>("ProxyConfigRelativePath");
-            var fullPath = Path.Combine(executionPath, proxyJsonPath);
-
-            string proxyJsonFile = null;
-            try
-            {
-                proxyJsonFile = File.ReadAllText(fullPath);
-            }
-            catch (FileNotFoundException ex)
-            {
-                _logger.LogError(ex.ToString());
-                throw;
-            }
-
-            var proxyAppSettings = JsonConvert.DeserializeObject<ProxyAppSettngs>(proxyJsonFile);
-
-            return proxyAppSettings;
         }
     }
 }

@@ -8,6 +8,7 @@
         AFTERNOON = 3,
         EVENING = 4,
         ANY = 5,
-        SIMPLERESPONSE = 6
+        SIMPLERESPONSE = 6,
+        SELFIE
     }
 }

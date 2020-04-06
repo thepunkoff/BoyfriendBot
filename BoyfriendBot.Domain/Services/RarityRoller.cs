@@ -2,11 +2,34 @@
 using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
 using System;
+using System.Threading.Tasks;
+
 namespace BoyfriendBot.Domain.Services
 {
     public class RarityRoller : IRarityRoller
     {
-        public MessageRarity RollRarityForUser(UserDbo userDbo)
+        private readonly IUserStorage _userStorage;
+
+        public RarityRoller(
+              IUserStorage userStorage
+            )
+        {
+            _userStorage = userStorage;
+        }
+
+        public MessageRarity RollRarityForUser(UserDbo user)
+        {
+            return RollRarity(user);
+        }
+
+        public async Task<MessageRarity> RollRarityForUser(long chatId)
+        {
+            var userDbo = await _userStorage.GetUserByChatIdNoTracking(chatId);
+
+            return RollRarity(userDbo);
+        }
+
+        private MessageRarity RollRarity(UserDbo userDbo)
         {
             MessageRarity winner = default;
 
