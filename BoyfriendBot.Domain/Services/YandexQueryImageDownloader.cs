@@ -10,13 +10,13 @@ using System.Web;
 
 namespace BoyfriendBot.Domain.Services
 {
-    public class YandexRandomImageProvider : IRandomImageProvider
+    public class YandexQueryImageDownloader : IQueryImageDownloader
     {
         private HtmlParser _htmlParser;
         private Random _rng;
         private const string UrlTemplate = "https://yandex.ru/images/search?text=@";
 
-        public YandexRandomImageProvider()
+        public YandexQueryImageDownloader()
         {
             _htmlParser = new HtmlParser();
             _rng = new Random();

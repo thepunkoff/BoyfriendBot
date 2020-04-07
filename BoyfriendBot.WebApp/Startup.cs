@@ -85,7 +85,7 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<IInlineKeyboardMenuParser, InlineKeyboardMenuParser>()
                 .AddTransient<IMessageTextTransformer, MessageTextTransformer>()
                 .AddTransient<IRandomFactGenerator, RandstuffruRandomFactGenerator>()
-                .AddTransient<IRandomImageProvider, YandexRandomImageProvider>()
+                .AddTransient<IQueryImageDownloader, YandexQueryImageDownloader>()
                 .AddTransient<IInputProcessor, InputProcessor>()
                 .AddTransient<IStringAnalyzer, StringAnalyzer>()
                 .AddTransient<IExpressionBuilder, ExpressionBuilder>()

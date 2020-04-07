@@ -5,6 +5,7 @@ using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Telegram.Bot.Exceptions;
+using Telegram.Bot.Types.InputFiles;
 
 namespace BoyfriendBot.Domain.Services
 {
@@ -40,13 +41,13 @@ namespace BoyfriendBot.Domain.Services
 
             try
             {
-                if (message.ImageUrl == null)
+                if (message.Image == null)
                 {
                     await _telegramBotClientWrapper.Client.SendTextMessageAsync(chatId, message.Text);
                 }
                 else
                 {
-                    await _telegramBotClientWrapper.Client.SendPhotoAsync(chatId, message.ImageUrl, caption: message.Text);
+                    await _telegramBotClientWrapper.Client.SendPhotoAsync(chatId, message.Image, caption: message.Text);
                 }
             }
             catch (ApiRequestException ex)

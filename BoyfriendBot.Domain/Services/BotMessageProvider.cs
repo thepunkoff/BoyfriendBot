@@ -19,7 +19,7 @@ namespace BoyfriendBot.Domain.Services
         private readonly ILogger<BotMessageProvider> _logger;
         private readonly IMessageTextTransformer _messageTextTransformer;
         private readonly IUserStorage _userStorage;
-        private readonly IRandomImageProvider _randomImageProvider;
+        private readonly IImageProvider _imageProvider;
         private readonly IResourceManager _resourceManager;
 
         public BotMessageProvider(
@@ -27,7 +27,7 @@ namespace BoyfriendBot.Domain.Services
             , ILogger<BotMessageProvider> logger
             , IMessageTextTransformer messageTextTransformer
             , IUserStorage userStorage
-            , IRandomImageProvider randomImageProvider
+            , IImageProvider imageProvider
             , IResourceManager resourceManager
             )
         {
@@ -35,7 +35,7 @@ namespace BoyfriendBot.Domain.Services
             _logger = logger;
             _messageTextTransformer = messageTextTransformer;
             _userStorage = userStorage;
-            _randomImageProvider = randomImageProvider;
+            _imageProvider = imageProvider;
             _resourceManager = resourceManager;
         }
 
@@ -92,20 +92,30 @@ namespace BoyfriendBot.Domain.Services
                 message.Text = _messageTextTransformer.ExecuteRant(message.Text, gender, botGender);
             }
 
-            if (xMessage.Attribute("imagesrc") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("imagesrc").Value))
-            {
-
-            }
-
             if (xMessage.Attribute("image") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("image").Value))
             {
-                message.ImageUrl = await _randomImageProvider.GetRandomImageUrl(xMessage.Attribute("image").Value);
-            }
+                var imageCategory = Enum.Parse<ImageCategory>(xMessage.Attribute("image").Value);
+                var localResult = _imageProvider.GetLocalImage(imageCategory, gender ? "парень" : "девушка");
 
-            if (xMessage.Attribute("imagerant") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("imagerant").Value))
-            {
-                var searchQuery = _messageTextTransformer.ExecuteRant(xMessage.Attribute("imagerant").Value, gender, botGender);
-                message.ImageUrl = await _randomImageProvider.GetRandomImageUrl(searchQuery);
+                if (localResult.Value != null)
+                {
+                    message.Image = localResult.Value;
+                }
+                else
+                {
+                    _logger.LogError(localResult.Message);
+
+                    var onlineResult = await _imageProvider.GetOnlineImage(imageCategory, gender ? "парень" : "девушка");
+
+                    if (onlineResult.Value != null)
+                    {
+                        message.Image = onlineResult.Value;
+                    }
+                    else
+                    {
+                        _logger.LogError(onlineResult.Message);
+                    }
+                }
             }
 
             return message;

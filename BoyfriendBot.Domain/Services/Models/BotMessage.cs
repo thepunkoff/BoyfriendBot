@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Telegram.Bot.Types.InputFiles;
 
 namespace BoyfriendBot.Domain.Services.Models
 {
     public class BotMessage
     {
         public BotMessage() { }
-        public BotMessage(string text, string photo)
+        public BotMessage(string text, InputOnlineFile image)
         {
             Text = text;
-            ImageUrl = photo;
+            Image = image;
         }
         public BotMessage(string text)
         {
@@ -19,6 +20,6 @@ namespace BoyfriendBot.Domain.Services.Models
         }
 
         public string Text { get; set; }
-        public string ImageUrl { get; set; }
+        public InputOnlineFile Image { get; set; }
     }
 }

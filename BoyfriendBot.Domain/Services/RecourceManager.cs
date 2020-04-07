@@ -146,5 +146,29 @@ namespace BoyfriendBot.Domain.Services
         {
             return _appSettings.RantPackagePath;
         }
+
+        public string GetImagesDirectory()
+        {
+            return _appSettings.ImagesDirectoryAbsolutePath;
+        }
+
+        public JsonDocument GetImagesDoc()
+        {
+            var fullPath = Path.Combine(ExecutionPath, _appSettings.ImagesDocPath);
+            string json = null;
+            try
+            {
+                json = File.ReadAllText(fullPath);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+
+            var jDoc = JsonDocument.Parse(json);
+
+            return jDoc;
+        }
     }
 }

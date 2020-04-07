@@ -62,13 +62,13 @@ namespace BoyfriendBot.Domain.Services
                 var rarity = _rarityRoller.RollRarityForUser(user);
                 var message = await _messageTextProvider.GetMessage(MessageCategory.WAKEUP, MessageType.STANDARD, rarity, user.ChatId); // could already pass gender and so on
 
-                if (message.ImageUrl == null)
+                if (message.Image == null)
                 {
                     sentMessage = await _botClient.SendTextMessageAsync(user.ChatId, message.Text);
                 }
                 else
                 {
-                    sentMessage = await _botClient.SendPhotoAsync(user.ChatId, message.ImageUrl, caption: message.Text);
+                    sentMessage = await _botClient.SendPhotoAsync(user.ChatId, message.Image, caption: message.Text);
                 }
 
                 sentMessages.Add(sentMessage);
@@ -101,13 +101,13 @@ namespace BoyfriendBot.Domain.Services
                 var rarity = _rarityRoller.RollRarityForUser(user);
                 var message = await _messageTextProvider.GetMessage(Enum.Parse<MessageCategory>(partOfDay.Name.ToUpperInvariant()), MessageType.STANDARD, rarity, user.ChatId); // could already pass gender and so on
 
-                if (message.ImageUrl == null)
+                if (message.Image == null)
                 {
                     sentMessage = await _botClient.SendTextMessageAsync(user.ChatId, message.Text);
                 }
                 else
                 {
-                    sentMessage = await _botClient.SendPhotoAsync(user.ChatId, message.ImageUrl, caption: message.Text);
+                    sentMessage = await _botClient.SendPhotoAsync(user.ChatId, message.Image, caption: message.Text);
                 }
                 sentMessages.Add(sentMessage);
             }

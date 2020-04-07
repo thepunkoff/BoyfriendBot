@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace BoyfriendBot.Domain.Services.Interfaces
 {
-    public interface IRandomImageProvider
+    public interface IQueryImageDownloader
     {
         Task<string> GetRandomImageUrl(string query);
     }

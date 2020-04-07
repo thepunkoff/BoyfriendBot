@@ -15,5 +15,7 @@ namespace BoyfriendBot.Domain.Services.Interfaces
         public JsonDocument GetMenusDoc();
         public XDocument GetMatchGraph();
         public string GetRantPackagePath();
+        public string GetImagesDirectory();
+        public JsonDocument GetImagesDoc();
     }
 }

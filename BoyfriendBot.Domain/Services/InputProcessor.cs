@@ -43,7 +43,7 @@ namespace BoyfriendBot.Domain.Services
             else if (_stringAnalyzer.IsMatch(userInput.ToLowerInvariant(), MatchCategory.SELFIE_REQUEST))
             {
                 await _telegramClient.SendMessageAsync(
-                    category: MessageCategory.ANY,
+                    category: MessageCategory.SELFIE,
                     type: MessageType.STANDARD,
                     //rarity: await _rarityRoller.RollRarityForUser(chatId),
                     rarity: MessageRarity.BLUE,
