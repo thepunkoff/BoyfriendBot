@@ -4,6 +4,8 @@ using BoyfriendBot.Domain.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 
@@ -32,40 +34,37 @@ namespace BoyfriendBot.Domain.Commands
             _serviceProvider = serviceProvider;
         }
 
-        public override async Task Execute(long chatId, params string[] args)
+        public override async Task Execute(long chatId, int? messageId, params string[] args)
         {
-            var settingId = args[0];
-            var settingValue = args[1];
-            var user = await _userStorage.GetUserByChatIdNoTracking(chatId);
-            var userId = user.UserId;
-
-            var messageId = 0;
-            if (args.Length == 3)
+            if (args.Length % 2 != 0)
             {
-                int.TryParse(args[2], out messageId);
+                _logger.LogError($"Odd arguments count for \"/set\" command.");
+                await _botClient.SendTextMessageAsync(chatId, Const.ErrorMessage);
             }
 
-            var query = $"UPDATE \"UserSettings\" SET \"{settingId}\" = {settingValue} WHERE \"UserId\" = {userId}";
+            List<string> settingsList = new List<string>();
+
+            for(int i = 0; i < args.Length; i += 2)
+            {
+                var settingId = args[i];
+                var settingValue = args[i + 1];
+
+                settingsList.Add($"{settingId} = {settingValue}");
+            }
+
+            var settings = string.Join(", ", settingsList);
+
+            var query = $"UPDATE \"UserSettings\" SET {settings} WHERE \"ChatId\" = {chatId}";
 
             using (var context = _contextFactory.Create())
             {
                 try
                 {
-                    await ((DbContext)context).Database.ExecuteSqlRawAsync(query);
+                    var rowsAffected = await ((DbContext)context).Database.ExecuteSqlRawAsync(query);
 
-                    _logger.LogError($"Executed query \"{query}\". ChatId: {chatId}");
+                    _logger.LogInformation($"Executed query \"{query}\". ChatId: {chatId}. {rowsAffected} rows affected.");
 
                     await _botClient.SendTextMessageAsync(chatId, "Готово!");
-
-                    //if (messageId == 0)
-                    //{
-                    //    await _botClient.SendTextMessageAsync(chatId, "Готово!");
-                    //
-                    //}
-                    //else
-                    //{
-                    //    await _botClient.EditMessageTextAsync(chatId, messageId, "Готово!");
-                    //}
                 }
                 catch (Exception ex)
                 {

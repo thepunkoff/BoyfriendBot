@@ -20,6 +20,13 @@ namespace BoyfriendBot.Domain.Core
             public const bool Female = false;
         }
 
+        public class BotPersonality
+        {
+            public const string Guy = "парень";
+            public const string Girl = "девушка";
+            public const string ThePunkOff = "thepunkoff";
+        }
+
         public class Commands
         {
             public const string SendMenuCommand = "menu";

@@ -4,6 +4,6 @@ namespace BoyfriendBot.Domain.Commands
 {
     public abstract class Command
     {
-        public abstract Task Execute(long chatId, params string[] args);
+        public abstract Task Execute(long chatId, int? messageId, params string[] args);
     }
 }

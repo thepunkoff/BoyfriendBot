@@ -1,4 +1,11 @@
-﻿CREATE TABLE "User" ("ChatId" long primary key, "Username" text, "UserId" long, "FirstName" text, "LastName" text);
+﻿CREATE TABLE "User"
+(
+	"ChatId" long primary key,
+	"Username" text,
+	"UserId" long,
+	"FirstName" text,
+	"LastName" text
+);
 
 
 CREATE TABLE "RarityWeights"
@@ -10,7 +17,6 @@ CREATE TABLE "RarityWeights"
 	"PurpleWeight" int not null default 5,
 	"OrangeWeight" int not null default 1,
     FOREIGN KEY ("ChatId") REFERENCES "User"("ChatId")
-
 );
 
 
@@ -18,6 +24,9 @@ CREATE TABLE "UserSettings"
 (
 	"ChatId" long,
 	"RecieveReminders" boolean not null default true,
-	"RecieveScheduled" boolean not null default true, "Gender" boolean not null default 0, "BotGender" boolean not null default 1,
+	"RecieveScheduled" boolean not null default true,
+	"Gender" boolean not null default 0,
+	"BotGender" boolean not null default 1,
+	"BotPersonality" varchar(30),
     FOREIGN KEY ("ChatId") REFERENCES "User"("ChatId")
 );

@@ -125,8 +125,9 @@ namespace BoyfriendBot.Domain.Services
                 {
                     RecieveReminders = true,
                     RecieveScheduled = true,
-                    Gender = Const.Gender.Male,
-                    BotGender = Const.Gender.Male
+                    Gender = Const.Gender.Female,
+                    BotGender = Const.Gender.Male,
+                    BotPersonality = Const.BotPersonality.Guy
                 };
 
                 userDbo.RarityWeights = new UserRarityWeightsDbo

@@ -7,7 +7,7 @@ namespace BoyfriendBot.Domain.Commands
 {
     public class NullCommand : Command
     {
-        public override async Task Execute(long chatId, params string[] args)
+        public override async Task Execute(long chatId, int? messageId, params string[] args)
         {
             return;
         }

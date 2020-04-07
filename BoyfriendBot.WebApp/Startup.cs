@@ -90,7 +90,8 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<IStringAnalyzer, StringAnalyzer>()
                 .AddTransient<IExpressionBuilder, ExpressionBuilder>()
                 .AddTransient<IResourceManager, ResourceManager>()
-                
+                .AddTransient<IImageProvider, ImageProvider>()
+
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)
                 .AddTransient<IBoyfriendBotDbContextFactory, BoyfriendBotDbContextFactory>()

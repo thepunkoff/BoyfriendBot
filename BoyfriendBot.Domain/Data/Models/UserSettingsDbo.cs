@@ -17,5 +17,6 @@ namespace BoyfriendBot.Domain.Data.Models
         public bool BotGender { get; set; }
         public bool RecieveReminders { get; set; }
         public bool RecieveScheduled { get; set; }
+        public string BotPersonality { get; set; }
     }
 }

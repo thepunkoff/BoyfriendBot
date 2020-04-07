@@ -26,19 +26,12 @@ namespace BoyfriendBot.Domain.Commands
             _logger = logger;
         }
 
-        public override async Task Execute(long chatId, params string[] args)
+        public override async Task Execute(long chatId, int? messageId, params string[] args)
         {
             var menuId = args[0];
             var menu = _menuParser.Parse(menuId);
 
-
-            var messageId = 0;
-            if (args.Length == 2)
-            {
-                int.TryParse(args[1], out messageId);
-            }
-
-            if (messageId == 0)
+            if (!messageId.HasValue)
             {
                 await _botClient.SendTextMessageAsync(
                     chatId,
@@ -50,7 +43,7 @@ namespace BoyfriendBot.Domain.Commands
             {
                 await _botClient.EditMessageTextAsync(
                     chatId,
-                    messageId: messageId,
+                    messageId.Value,
                     menu.Text,
                     replyMarkup: menu.ReplyMarkup
                 );

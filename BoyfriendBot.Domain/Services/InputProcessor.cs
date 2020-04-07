@@ -46,7 +46,7 @@ namespace BoyfriendBot.Domain.Services
                     category: MessageCategory.SELFIE,
                     type: MessageType.STANDARD,
                     //rarity: await _rarityRoller.RollRarityForUser(chatId),
-                    rarity: MessageRarity.BLUE,
+                    rarity: MessageRarity.WHITE,
                     chatId
                     );
             }

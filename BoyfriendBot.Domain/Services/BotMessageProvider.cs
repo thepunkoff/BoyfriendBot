@@ -79,6 +79,7 @@ namespace BoyfriendBot.Domain.Services
 
             var gender = user.UserSettings.Gender;
             var botGender = user.UserSettings.BotGender;
+            var botPersonality = user.UserSettings.BotPersonality;
 
             message.Text = xMessage.Value;
 
@@ -94,8 +95,8 @@ namespace BoyfriendBot.Domain.Services
 
             if (xMessage.Attribute("image") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("image").Value))
             {
-                var imageCategory = Enum.Parse<ImageCategory>(xMessage.Attribute("image").Value);
-                var localResult = _imageProvider.GetLocalImage(imageCategory, gender ? "парень" : "девушка");
+                var imageCategory = Enum.Parse<ImageCategory>(xMessage.Attribute("image").Value.ToUpperInvariant());
+                var localResult = _imageProvider.GetLocalImage(imageCategory, botPersonality);
 
                 if (localResult.Value != null)
                 {
@@ -103,9 +104,9 @@ namespace BoyfriendBot.Domain.Services
                 }
                 else
                 {
-                    _logger.LogError(localResult.Message);
+                    _logger.LogError($"Couldn't get local image. Reason: {localResult.Message}");
 
-                    var onlineResult = await _imageProvider.GetOnlineImage(imageCategory, gender ? "парень" : "девушка");
+                    var onlineResult = await _imageProvider.GetOnlineImage(imageCategory, botPersonality);
 
                     if (onlineResult.Value != null)
                     {
@@ -113,7 +114,7 @@ namespace BoyfriendBot.Domain.Services
                     }
                     else
                     {
-                        _logger.LogError(onlineResult.Message);
+                        _logger.LogError($"Couldn't get online image. Reason: {onlineResult.Message}");
                     }
                 }
             }

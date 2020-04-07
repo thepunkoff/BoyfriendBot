@@ -21,7 +21,7 @@ namespace BoyfriendBot.Domain.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task ProcessCommand(string commandString, long chatId)
+        public async Task ProcessCommand(string commandString, long chatId, int? messageId = null)
         {
             if (Const.Commands.CommandAliases.Keys.Contains(commandString))
             {
@@ -48,7 +48,7 @@ namespace BoyfriendBot.Domain.Services
                 command = _serviceProvider.GetService<SetSettingCommand>();
             }
             
-            await command.Execute(chatId, args);
+            await command.Execute(chatId, messageId, args);
         }
     }
 }

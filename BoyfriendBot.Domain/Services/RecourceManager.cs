@@ -158,7 +158,7 @@ namespace BoyfriendBot.Domain.Services
             string json = null;
             try
             {
-                json = File.ReadAllText(fullPath);
+                json = File.ReadAllText(fullPath, Encoding.GetEncoding("windows-1251"));
             }
             catch (Exception ex)
             {

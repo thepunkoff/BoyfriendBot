@@ -76,7 +76,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             }
             catch (Exception ex)
             {
-                _logger.LogCritical($"StartAsync: {ex.ToString()}");
+                _logger.LogCritical($"[{Const.Serilog.ListeningService}] StartAsync: {ex.ToString()}");
                 throw;
             }
         }
@@ -86,18 +86,18 @@ namespace BoyfriendBot.Domain.Services.Hosted
             try
             {
                 var data = e.CallbackQuery.Data;
-                var messageId = e.CallbackQuery.Message.MessageId.ToString();
+                var messageId = e.CallbackQuery.Message.MessageId;
 
                 if (data.StartsWith("/"))
                 {
-                    var message = data.TrimStart('/') + $" {messageId}";
+                    var message = data.TrimStart('/');
 
-                    await _commandProcessor.ProcessCommand(message.Trim(), e.CallbackQuery.Message.Chat.Id);
+                    await _commandProcessor.ProcessCommand(message.Trim(), e.CallbackQuery.Message.Chat.Id, messageId);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogCritical($"OnCallbackQuery: {ex.ToString()}");
+                _logger.LogCritical($"[{Const.Serilog.ListeningService}] OnCallbackQuery: {ex.ToString()}");
                 throw;
             }
         }
@@ -114,7 +114,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             }
             catch (Exception ex)
             {
-                _logger.LogCritical($"StopAsync: {ex.ToString()}");
+                _logger.LogCritical($"[{Const.Serilog.ListeningService}] StopAsync: {ex.ToString()}");
                 throw;
             }
         }
@@ -141,7 +141,7 @@ namespace BoyfriendBot.Domain.Services.Hosted
             }
             catch (Exception ex)
             {
-                _logger.LogCritical($"OnMessage: {ex.ToString()}");
+                _logger.LogCritical($"[{Const.Serilog.ListeningService}] OnMessage: {ex.ToString()}");
             }
         }
 
