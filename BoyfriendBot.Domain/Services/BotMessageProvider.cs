@@ -96,17 +96,18 @@ namespace BoyfriendBot.Domain.Services
             if (xMessage.Attribute("image") != null && !string.IsNullOrWhiteSpace(xMessage.Attribute("image").Value))
             {
                 var imageCategory = Enum.Parse<ImageCategory>(xMessage.Attribute("image").Value.ToUpperInvariant());
-                var localResult = _imageProvider.GetLocalImage(imageCategory, botPersonality);
+                //var localResult = _imageProvider.GetLocalImage(imageCategory, botPersonality, chatId);
 
-                if (localResult.Value != null)
+                //if (localResult.Value != null)
+                if (false)
                 {
-                    message.Image = localResult.Value;
+                    //message.Image = localResult.Value;
                 }
                 else
                 {
-                    _logger.LogError($"Couldn't get local image. Reason: {localResult.Message}");
+                    //_logger.LogError($"Couldn't get local image. Reason: {localResult.Message}");
 
-                    var onlineResult = await _imageProvider.GetOnlineImage(imageCategory, botPersonality);
+                    var onlineResult = await _imageProvider.GetOnlineImage(imageCategory, botPersonality, chatId);
 
                     if (onlineResult.Value != null)
                     {

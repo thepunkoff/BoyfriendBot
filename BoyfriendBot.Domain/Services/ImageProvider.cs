@@ -3,9 +3,11 @@ using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
 
 namespace BoyfriendBot.Domain.Services
@@ -15,6 +17,13 @@ namespace BoyfriendBot.Domain.Services
         private readonly ILogger<ImageProvider> _logger;
         private readonly IResourceManager _resourceManager;
         private readonly IQueryImageDownloader _queryImageDownloader;
+
+        private static Dictionary<long, List<(string FileKey, FileBase File)>> _fileCache;
+
+        static ImageProvider()
+        {
+            _fileCache = new Dictionary<long, List<(string FileKey, FileBase File)>>();
+        }
 
         private string ImagesDirectory { get; set; }
 
@@ -31,7 +40,23 @@ namespace BoyfriendBot.Domain.Services
             ImagesDirectory = _resourceManager.GetImagesDirectory();
         }
 
-        public Result<InputOnlineFile> GetLocalImage(ImageCategory imageCategory, string personality)
+        public void CacheFile(long chatId, string fileKey, FileBase file)
+        {
+            if (!_fileCache.ContainsKey(chatId))
+            {
+                _fileCache.Add(chatId, new List<(string FileKey, FileBase File)>() { (fileKey, file) });
+                return;
+            }
+
+            if (!_fileCache[chatId].Any(x => x.FileKey == fileKey))
+            {
+                var files = _fileCache[chatId];
+
+                files.Add((fileKey, file));
+            }
+        }
+
+        public Result<InputOnlineFile> GetLocalImage(ImageCategory imageCategory, string personality, long chatId)
         {
             _logger.LogInformation($"Getting local image. Category: {imageCategory.ToString()}, Personality: {personality}");
 
@@ -49,16 +74,31 @@ namespace BoyfriendBot.Domain.Services
             var jImage = jImages[index];
             
             var fileName = jImage.GetProperty("name").GetString();
-            
-            var categoryDirPath = Path.Combine(ImagesDirectory, imageCategory.ToString());
-            var imagePath = Path.Combine(categoryDirPath, fileName);
-            
-            return new BotImage(imagePath).GetImageForSending();
+
+            Result<InputOnlineFile> image = null;
+            if (_fileCache.ContainsKey(chatId) && _fileCache[chatId].Any(x => x.FileKey == fileName))
+            {
+                var fileId = _fileCache[chatId]
+                    .Where(x => x.FileKey == fileName)
+                    .FirstOrDefault()
+                    .File.FileId;
+
+                image = new Result<InputOnlineFile>(new InputOnlineFile(fileId));
+            }
+            else
+            {
+                var categoryDirPath = Path.Combine(ImagesDirectory, imageCategory.ToString().ToLowerInvariant());
+                var imagePath = Path.Combine(categoryDirPath, fileName);
+
+                image = new BotImage(imagePath, fileName).GetImageForSending();
+            }
+
+            return image;
         }
 
-        public async Task<Result<InputOnlineFile>> GetOnlineImage(ImageCategory imageCategory, string personality)
+        public async Task<Result<InputOnlineFile>> GetOnlineImage(ImageCategory imageCategory, string personality, long chatId)
         {
-            _logger.LogInformation($"Getting local image. Category: {imageCategory.ToString()}, Personality: {personality}");
+            _logger.LogInformation($"Getting online image. Category: {imageCategory.ToString()}, Personality: {personality}");
 
             var query = _resourceManager.GetImagesDoc()
                 .RootElement
@@ -68,7 +108,22 @@ namespace BoyfriendBot.Domain.Services
 
             var url = await _queryImageDownloader.GetRandomImageUrl($"{query} {personality}");
 
-            return new BotImage(new Uri(url)).GetImageForSending();
+            Result<InputOnlineFile> image = null;
+            if (_fileCache.ContainsKey(chatId) && _fileCache[chatId].Any(x => x.FileKey == url))
+            {
+                var fileId = _fileCache[chatId]
+                    .Where(x => x.FileKey == url)
+                    .FirstOrDefault()
+                    .File.FileId;
+
+                image = new Result<InputOnlineFile>(new InputOnlineFile(fileId));
+            }
+            else
+            {
+                image = new BotImage(new Uri(url), url).GetImageForSending();
+            }
+
+            return image;
         }
     }
 }

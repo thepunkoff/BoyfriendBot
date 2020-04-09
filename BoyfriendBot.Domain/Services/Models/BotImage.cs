@@ -11,14 +11,17 @@ namespace BoyfriendBot.Domain.Services.Models
     {
         private Uri _imageUrl;
         private string _localImagePath;
+        private string _fileKey;
 
-        public BotImage(Uri imageUrl)
+        public BotImage(Uri imageUrl, string fileKey)
         {
             _imageUrl = imageUrl;
+            _fileKey = fileKey;
         }
-        public BotImage(string localImagePath)
+        public BotImage(string localImagePath, string fileKey)
         {
             _localImagePath = localImagePath;
+            _fileKey = fileKey;
         }
 
         public Result<InputOnlineFile> GetImageForSending()
@@ -32,11 +35,11 @@ namespace BoyfriendBot.Domain.Services.Models
             {
                 try
                 {
-                    using (var fileStream = new FileStream(_localImagePath, FileMode.Open))
-                    {
-                        var file = new InputOnlineFile(fileStream);
-                        return new Result<InputOnlineFile>(file);
-                    }
+                    var fileStream = new FileStream(_localImagePath, FileMode.Open);
+
+                    var file = new InputOnlineFile(fileStream, _fileKey);
+
+                    return new Result<InputOnlineFile>(file);
                 }
                 catch (FileNotFoundException ex)
                 {

@@ -13,17 +13,20 @@ namespace BoyfriendBot.Domain.Services
     {
         private readonly ITelegramBotClientWrapper _telegramBotClientWrapper;
         private readonly IBotMessageProvider _messageTextProvider;
+        private readonly IImageProvider _imageProvider;
         private readonly ILogger<TelegramClient> _logger;
 
 
         public TelegramClient(
               ITelegramBotClientWrapper telegramBotClientWrapper
             , IBotMessageProvider messageTextProvider
+            , IImageProvider imageProvider
             , ILogger<TelegramClient> logger
             )
         {
             _telegramBotClientWrapper = telegramBotClientWrapper;
             _messageTextProvider = messageTextProvider;
+            _imageProvider = imageProvider;
             _logger = logger;
         }
 
@@ -47,7 +50,14 @@ namespace BoyfriendBot.Domain.Services
                 }
                 else
                 {
-                    await _telegramBotClientWrapper.Client.SendPhotoAsync(chatId, message.Image, caption: message.Text);
+                    var sentMessage = await _telegramBotClientWrapper.Client.SendPhotoAsync(chatId, message.Image, caption: message.Text);
+
+                    _imageProvider.CacheFile(chatId, message.Image.FileName ?? message.Image.Url, sentMessage.Photo[0]);
+
+                    if (message.Image.Content != null)
+                    {
+                        message.Image.Content.Close();
+                    }
                 }
             }
             catch (ApiRequestException ex)
