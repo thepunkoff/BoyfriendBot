@@ -91,6 +91,8 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<IExpressionBuilder, ExpressionBuilder>()
                 .AddTransient<IResourceManager, ResourceManager>()
                 .AddTransient<IImageProvider, ImageProvider>()
+                .AddSingleton<ISessionManagerSingleton, SessionManagerSingleton>()
+                .AddTransient<ISessionDataProcessor, SessionDataProcessor>()
 
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)

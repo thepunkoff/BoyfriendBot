@@ -7,5 +7,7 @@
 /BoyfriendBot.Domain/Data/Scripts/
 /BoyfriendBot.WebApp/bin/
 /BoyfriendBot.WebApp/obj/
-/BoyfriendBot.WebApp/Data/
+/BoyfriendBot.WebApp/Data/Rant
+/BoyfriendBot.WebApp/Data/Private
+/BoyfriendBot.WebApp/proxyAppSettings.json
 /RussianRantDictionary/

@@ -2,7 +2,9 @@
 using BoyfriendBot.Domain.Services.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 
@@ -16,6 +18,8 @@ namespace BoyfriendBot.Domain.Services
         private readonly IBotMessageProvider _botMessageProvider;
         private readonly IRarityRoller _rarityRoller;
         private readonly IStringAnalyzer _stringAnalyzer;
+        private readonly ISessionManagerSingleton _sessionManagerSingleton;
+        private readonly ISessionDataProcessor _sessionDataProcessor;
 
         public InputProcessor(
               ICommandProcessor commandProcessor
@@ -24,6 +28,8 @@ namespace BoyfriendBot.Domain.Services
             , IBotMessageProvider botMessageProvider
             , IRarityRoller rarityRoller
             , IStringAnalyzer stringAnalyzer
+            , ISessionManagerSingleton sessionManagerSingleton
+            , ISessionDataProcessor sessionDataProcessor
             )
         {
             _commandProcessor = commandProcessor;
@@ -32,6 +38,8 @@ namespace BoyfriendBot.Domain.Services
             _botMessageProvider = botMessageProvider;
             _rarityRoller = rarityRoller;
             _stringAnalyzer = stringAnalyzer;
+            _sessionManagerSingleton = sessionManagerSingleton;
+            _sessionDataProcessor = sessionDataProcessor;
         }
 
         public async Task ProcessUserInput(string userInput, long chatId)
@@ -52,12 +60,25 @@ namespace BoyfriendBot.Domain.Services
             }
             else
             {
-                await _telegramClient.SendMessageAsync(
-                    category: MessageCategory.SIMPLERESPONSE,
-                    type: MessageType.STANDARD,
-                    rarity: await _rarityRoller.RollRarityForUser(chatId),
-                    chatId
-                    );
+                var sessions = _sessionManagerSingleton.GetActiveSessions(chatId);
+
+                if (sessions.Count() > 0)
+                {
+                    foreach (var session in sessions.Reverse<Session>())
+                    {
+                        var sessionData = session.Update(_sessionManagerSingleton, userInput);
+                        await _sessionDataProcessor.ProcessAsync(sessionData, chatId);
+                    }
+                }
+                else
+                {
+                    await _telegramClient.SendMessageAsync(
+                        category: MessageCategory.SIMPLERESPONSE,
+                        type: MessageType.STANDARD,
+                        rarity: await _rarityRoller.RollRarityForUser(chatId),
+                        chatId
+                        );
+                }
             }
         }
     }

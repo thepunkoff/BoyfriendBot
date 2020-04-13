@@ -1,5 +1,6 @@
 ﻿using BoyfriendBot.Domain.AppSettings;
 using BoyfriendBot.Domain.Services.Interfaces;
+using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -169,6 +170,11 @@ namespace BoyfriendBot.Domain.Services
             var jDoc = JsonDocument.Parse(json);
 
             return jDoc;
+        }
+
+        public string GetSessionScriptPath(SessionType type)
+        {
+            return Path.Combine(ExecutionPath, _appSettings.SessionScriptsPath, type.ToString().ToLowerInvariant() + ".lua");
         }
     }
 }

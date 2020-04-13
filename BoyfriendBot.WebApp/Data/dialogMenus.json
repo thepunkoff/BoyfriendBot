@@ -1,0 +1,217 @@
+﻿{
+  "Dialogs": [
+    {
+      "Id": "settings",
+      "Menus": [
+        {
+          "Id": "settings_main",
+          "Text": "Выбери категорию.",
+          "Markup": {
+            "Rows": [
+              {
+                "Buttons": [
+                  {
+                    "Text": "Получение сообщений",
+                    "CallbackData": "/menu settings_messages"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "Пол",
+                    "CallbackData": "/menu settings_gender"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Id": "settings_messages",
+          "Text": "Выбери настройку.",
+          "Markup": {
+            "Rows": [
+              {
+                "Buttons": [
+                  {
+                    "Text": "Уведомления",
+                    "CallbackData": "/menu settings_messages_reminders"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "Ежедневные сообщения",
+                    "CallbackData": "/menu settings_messages_scheduled"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "<- Назад",
+                    "CallbackData": "/menu settings_main"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Id": "settings_messages_reminders",
+          "Text": "Выбери значение.",
+          "Markup": {
+            "Rows": [
+              {
+                "Buttons": [
+                  {
+                    "Text": "Вкл",
+                    "CallbackData": "/set RecieveReminders 1"
+                  },
+                  {
+                    "Text": "Выкл",
+                    "CallbackData": "/set RecieveReminders 0"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "<- Назад",
+                    "CallbackData": "/menu settings_messages"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Id": "settings_messages_scheduled",
+          "Text": "Выбери значение.",
+          "Markup": {
+            "Rows": [
+              {
+                "Buttons": [
+                  {
+                    "Text": "Вкл",
+                    "CallbackData": "/set RecieveScheduled 1"
+                  },
+                  {
+                    "Text": "Выкл",
+                    "CallbackData": "/set RecieveScheduled 0"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "<- Назад",
+                    "CallbackData": "/menu settings_messages"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Id": "settings_gender",
+          "Text": "Выбери настройку.",
+          "Markup": {
+            "Rows": [
+              {
+                "Buttons": [
+                  {
+                    "Text": "Выбрать мой пол",
+                    "CallbackData": "/menu settings_gender_user"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "Вырать пол бота",
+                    "CallbackData": "/menu settings_gender_bot"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "<- Назад",
+                    "CallbackData": "/menu settings_main"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Id": "settings_gender_user",
+          "Text": "Выбери значение.",
+          "Markup": {
+            "Rows": [
+              {
+                "Buttons": [
+                  {
+                    "Text": "Мужской",
+                    "CallbackData": "/set Gender 1"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "Женский",
+                    "CallbackData": "/set Gender 0"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "<- Назад",
+                    "CallbackData": "/menu settings_gender"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Id": "settings_gender_bot",
+          "Text": "Выбери значение.",
+          "Markup": {
+            "Rows": [
+              {
+                "Buttons": [
+                  {
+                    "Text": "Мужской",
+                    "CallbackData": "/set BotGender 1 BotPersonality 'парень'"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "Женский",
+                    "CallbackData": "/set BotGender 0 BotPersonality 'девушка'"
+                  }
+                ]
+              },
+              {
+                "Buttons": [
+                  {
+                    "Text": "<- Назад",
+                    "CallbackData": "/menu settings_gender"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

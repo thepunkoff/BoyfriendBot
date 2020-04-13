@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BoyfriendBot.Domain.Services.Models;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -17,5 +18,6 @@ namespace BoyfriendBot.Domain.Services.Interfaces
         public string GetRantPackagePath();
         public string GetImagesDirectory();
         public JsonDocument GetImagesDoc();
+        public string GetSessionScriptPath(SessionType type);
     }
 }

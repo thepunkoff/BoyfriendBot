@@ -10,5 +10,6 @@
         public string RantPackagePath { get; set; }
         public string ImagesDirectoryAbsolutePath { get; set; }
         public string ImagesDocPath { get; set; }
+        public string SessionScriptsPath { get; set; }
     }
 }

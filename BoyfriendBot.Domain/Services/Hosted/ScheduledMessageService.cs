@@ -29,6 +29,9 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly IMessageSchedule _messageSchedule;
         private readonly IRarityRoller _rarityRoller;
         private readonly IEventManager _eventManager;
+        private readonly ISessionManagerSingleton _sessionManagerSingleton;
+        private readonly ISessionDataProcessor _sessionDataProcessor;
+
         private CancellationTokenSource _cts;
 
         private Dictionary<PartOfDay, int> MessageCounts { get; set; }
@@ -44,6 +47,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
             , IMessageSchedule messageSchedule
             , IRarityRoller rarityRoller
             , IEventManager eventManager
+            , ISessionManagerSingleton sessionManagerSingleton
+            , ISessionDataProcessor sessionDataProcessor
             )
         {
             _appSettings = appSettings.Value;
@@ -56,6 +61,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _messageSchedule = messageSchedule;
             _rarityRoller = rarityRoller;
             _eventManager = eventManager;
+            _sessionManagerSingleton = sessionManagerSingleton;
+            _sessionDataProcessor = sessionDataProcessor;
 
             _logger.LogInformation($"Initializing scheduled messaging service...");
 
@@ -89,6 +96,9 @@ namespace BoyfriendBot.Domain.Services.Hosted
                 await RescheduleMessages(cancellationToken);
 
                 _logger.LogInformation($"Started");
+
+                var data = _sessionManagerSingleton.StartSession(SessionType.SIMPLE_DIALOG, 583334704);
+                await _sessionDataProcessor.ProcessAsync(data, 583334704);
 
                 //var result = await _telegramClient.SendMessageAsync(MessageCategory.ANY, MessageType.STANDARD, MessageRarity.BLUE, 583334704);
                 //

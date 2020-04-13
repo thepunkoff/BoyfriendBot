@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<MatchConditions>
+  <Selfie_Request>
+    <Condition>
+      <Or>
+        <Contains>сфоткайся</Contains>
+        <And>
+          <ContainsOneOf>хотеть, хочу, хотим, скинь, пришли, кинь, отправь, сделай, можно, плиз, мне, пожалуйста</ContainsOneOf>
+          <ContainsOneOf>фотка, фото, фотку, фотографию, фотки, селфи, себяшка, себяшку, себяшки</ContainsOneOf>
+        </And>
+        <And>
+          <ContainsOneOf>можешь, сможешь</ContainsOneOf>
+          <ContainsOneOf>скинуть, сделать, кинуть, прислать, отправить</ContainsOneOf>
+          <ContainsOneOf>фотка, фото, фотку, фотографию, фотки, селфи, себяшка, себяшку, себяшки</ContainsOneOf>
+        </And>
+      </Or>
+    </Condition>
+  </Selfie_Request>
+</MatchConditions>

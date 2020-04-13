@@ -1,0 +1,55 @@
+{
+  "selfie": {
+    "query": "селфи",
+    "images": [
+      {
+        "name": "selfie_thepunkoff_1.jpg",
+        "personality": "thepunkoff"
+      },
+      {
+        "name": "selfie_thepunkoff_2.jpg",
+        "personality": "thepunkoff"
+      },
+      {
+        "name": "selfie_thepunkoff_3.jpg",
+        "personality": "thepunkoff"
+      },
+      {
+        "name": "selfie_thepunkoff_4.jpg",
+        "personality": "thepunkoff"
+      },
+      {
+        "name": "selfie_guy_1.jpg",
+        "personality": "парень"
+      },
+      {
+        "name": "selfie_guy_2.jpg",
+        "personality": "парень"
+      },
+      {
+        "name": "selfie_guy_3.jpg",
+        "personality": "парень"
+      },
+      {
+        "name": "selfie_guy_4.jpg",
+        "personality": "парень"
+      },
+      {
+        "name": "selfie_girl_1.jpg",
+        "personality": "девушка"
+      },
+      {
+        "name": "selfie_girl_2.jpg",
+        "personality": "девушка"
+      },
+      {
+        "name": "selfie_girl_3.jpg",
+        "personality": "девушка"
+      },
+      {
+        "name": "selfie_girl_4.jpg",
+        "personality": "девушка"
+      }
+    ]
+  }
+}

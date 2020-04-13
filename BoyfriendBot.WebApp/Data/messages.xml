@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<messages>
+  <selfie>
+    <message type="standard" rarity="white" rant="false" image="selfie">Лови!</message>
+    <message type="standard" rarity="white" rant="false" image="selfie">Это я</message>
+    <message type="standard" rarity="white" rant="false" image="selfie">вроде норм</message>
+    <message type="standard" rarity="white" rant="false" image="selfie">Во. А теперь ты =)</message>
+    <message type="standard" rarity="blue" rant="true" image="selfie"><![CDATA[[if: [eq:[v: botGender];male];Скинул;Скинула]. А ты мне [if: [eq:[v: gender];male];сам;сама] давно не [if: [eq:[v: botGender];male];кидал;кидала]]]></message>
+  </selfie>
+  <simpleresponse>
+    <message type="standard" rarity="white" rant="false">Ну да)</message>
+    <message type="standard" rarity="white" rant="false">Хах</message>
+    <message type="standard" rarity="white" rant="false">Прикол</message>
+    <message type="standard" rarity="white" rant="false">Здорово!</message>
+    <message type="standard" rarity="green" rant="false">ххахахах</message>
+    <message type="standard" rarity="blue" rant="false">Хреново</message>
+    <message type="standard" rarity="purple" rant="true"><![CDATA[Ты [if: [eq:[v: gender];male];прав;права]]]></message>
+    <message type="standard" rarity="orange" rant="false">Это лучшее, что я когда-либо слышал</message>
+  </simpleresponse>
+  <wakeup>
+    <message type="standard" rarity="white" rant="false">Хей! Я снова здесь.</message>
+    <message type="standard" rarity="white" rant="true"><![CDATA[Не [if: [eq:[v: gender];male];ждал;ждала]? Я опять в строю.]]></message>
+    <message type="standard" rarity="green" rant="true"><![CDATA[Снова [if: [eq:[v: botGender];male];готов;готова] радовать тебя новыми сообщениями =)]]></message>
+    <message type="standard" rarity="blue" rant="true"><![CDATA[\[[if: [eq:[v: botGender];male];Boy;Girl]friendBot v 0.0.2\] Initialization success.]]></message>
+    <message type="standard" rarity="purple" rant="false">Меня все включают и выключают. Включают и выключают. Надоело!</message>
+    <message type="standard" rarity="orange" rant="false">Ёбен-бобен! Где я?!.</message>
+  </wakeup>
+  <any>
+    <!--<message type="standard" rarity="white" rant="false" insert="pickup">[Рандомный подкат из интернета. Пока не реализовано.]</message>-->
+    <message type="standard" rarity="white" rant="false" insert="fact">Прикинь, @fact@</message>
+    <!--<message type="standard" rarity="white" rant="false" insert="joke">Слушай приколюху: [Рандомный анекдот из интернета. Пока не реализовано.]. Я чет ору хД</message>-->
+    <!--<message type="standard" rarity="white" rant="false">[Какая-то неимоверно охуенная ебала. Пока не реализовано.]</message>-->
+    <message type="standard" rarity="blue" rant="false" image="leg">Зацени, моя нога</message>
+    <message type="standard" rarity="purple" rant="true" image="selfie"><![CDATA[Хей, я [if: [eq:[v: botGender];male];соскучился;соскучилась])]]></message>
+  </any>
+  <night>
+    <message type="standard" rarity="white" rant="false">Не спится что-то...</message>
+    <message type="standard" rarity="white" rant="false">Кошмар приснился... Как жаль, что ты не рядом(</message>
+    <message type="standard" rarity="green" rant="false">Звезды завораживающие... А вдруг там кто-то есть!</message>
+    <message type="standard" rarity="blue" rant="true" imagesrc="selfie1.jpg"><![CDATA[[if: [eq:[v: botGender];male];Проснулся;Проснулась] попить водички, [if: [eq:[v: botGender];male];решил;решила] написать) Люблю тебя :*]]></message>
+    <message type="standard" rarity="purple" rant="true"><![CDATA[Разбудил какой-то стук в окне. Просыпаюсь, вижу — какая-то нереально красивая темно синяя птица сидит на окне и что-то клюет. Я быстро [if: [eq:[v: botGender];male];схватился;схватилась] за телефон, но не [if: [eq:[v: botGender];male];успел;успела] ее сфоткать, улетела. Уснуть никак не могу теперь)]]></message>
+    <message type="standard" rarity="orange" rant="false">По ночам часто думаю о нас с тобой. Уехать бы куда-подальше. Путешествовать... Гулять... Обниматься...</message>
+  </night>
+  <morning>
+    <message type="standard" rarity="white" rant="false">Погода просто офигенная!</message>
+    <message type="standard" rarity="white" rant="false">Как твое утро?</message>
+    <message type="standard" rarity="green" rant="false">Хлопья с молоком или омлет?)</message>
+    <message type="standard" rarity="blue" rant="false">Погода не очень, а настроение очень даже!</message>
+    <message type="standard" rarity="purple" rant="false">Какие планы на сегодня?</message>
+    <message type="standard" rarity="orange" rant="false">Это стандартное утреннее сообщение. Правда очень-очень редкое. Тебе повезло. Надеюсь, тебе сегодня еще много в чем повезет!</message>
+    <message type="goodmorning" rarity="white" rant="false">Доброе утро!</message>
+    <message type="goodmorning" rarity="white" rant="false">Утречка!</message>
+    <message type="goodmorning" rarity="green" rant="false">Ну че так долго дрыхнешь?)</message>
+    <message type="goodmorning" rarity="blue" rant="false">Зайкин, пока вставать =)</message>
+    <message type="goodmorning" rarity="purple" rant="false">おはよう</message>
+    <message type="goodmorning" rarity="orange" rant="false">Не пойду на работу, и тебе советую. Давай где-нибудь встретимся и попьем молочные коктейли?)</message>
+  </morning>
+  <afternoon>
+    <message type="standard" rarity="white" rant="false">Надеюсь, у тебя все хорошо</message>
+    <message type="standard" rarity="white" rant="false">Денек сегодня огонь</message>
+    <message type="standard" rarity="green" rant="false">Настроение - кул! Вот бы каждый день так, как сегодня</message>
+    <message type="standard" rarity="blue" rant="true"><![CDATA[Сегодня [if: [eq:[v: botGender];male];выпил;выпила] уже две кружки кофе. Руки трясутся.]]></message>
+    <message type="standard" rarity="purple" rant="true"><![CDATA[Круто работать, когда знаешь, что где-то там есть ты. Ходишь [if: [eq:[v: gender];male];такой;такая], что-то делаешь. Класс)]]></message>
+    <message type="standard" rarity="orange" rant="false">Эй, ты! Да, ты. Там, за экраном. Будь счастлив, слышишь? Просто будь счастлив.</message>
+    <message type="lunch" rarity="white" rant="false">Я кушать! Приятного аппетита)</message>
+    <message type="lunch" rarity="white" rant="false">Закажу крыльев на обед. Сегодня можно.</message>
+    <message type="lunch" rarity="green" rant="false">Сегодня готовлю домашнюю шаурму. Надеюсь, будет класс</message>
+    <message type="lunch" rarity="blue" rant="false">Не хочешь прогуляться и где-нибудь пообедать?</message>
+    <message type="lunch" rarity="purple" rant="false">Омары в винном соусе... mmm, delicious...</message>
+    <message type="lunch" rarity="orange" rant="false">Я ем на обед золотые слитки, бриллиантовый дессерт, нефтяные сливки.</message>
+  </afternoon>
+  <evening>
+    <message type="standard" rarity="white" rant="true"><![CDATA[Не [if: [eq:[v: gender];male];устал;устала]? Я [if: [eq:[v: botGender];male];соскучился;соскучилась])]]></message>
+    <message type="standard" rarity="white" rant="false">Отдохни сегодня хорошо, ладно?</message>
+    <message type="standard" rarity="white">Как твой вечер сегодня?</message>
+    <message type="standard" rarity="green" rant="true"><![CDATA[[if: [eq:[v: botGender];male];Посмотрел;Посмотрела] по <tvchannel.dat> вечерний марафон <tvshow.gen>. Класс]]></message>
+    <message type="standard" rarity="blue" rant="false">Щас бы кофе, книгу и посидеть у камина...</message>
+    <message type="standard" rarity="purple" rant="false">Я скучаю... Особенно по вечерам</message>
+    <message type="standard" rarity="orange" rant="true"><![CDATA[Пошли поиграем в <game.acc -video>?)]]></message>
+    <message type="dinner" rarity="white" rant="false">Приятного аппетита, я ужинать!</message>
+    <message type="dinner" rarity="white" rant="true"><![CDATA[Я снова [if: [eq:[v: botGender];male];поел;поела].]]></message>
+    <message type="dinner" rarity="green" rant="true"><![CDATA[Курица с запеченой картошкой, салат из овощей со сметаной, пара бутеров с сыром, чай, печеньки. Вот что я сегодня [if: [eq:[v: botGender];male];кушал;кушала.]]]></message>
+    <message type="dinner" rarity="blue" rant="false">Сегодня не ужинаю, не хочется.</message>
+    <message type="dinner" rarity="purple" rant="false">Филе-миньон из вагю, черная икра, бокал Шато Шеваль Блан... mmm, delicious...</message>
+    <message type="dinner" rarity="orange" rant="true"><![CDATA[[if: [eq:[v: botGender];male];Искал;Искала] ебучий банкомат полвечера. [eq:[v: botGender];male];Поел;Поела] пирожок в хач-лавке. Не вечер, а мечта.]]></message>
+    <message type="goodnight" rarity="white" rant="false">Доброй ночи</message>
+    <message type="goodnight" rarity="white" rant="false">Спокойной ночи</message>
+    <message type="goodnight" rarity="green" rant="true"><![CDATA[Сладких снов, [if: [eq:[v: gender];male];малыш;малышка]]]></message>
+    <message type="goodnight" rarity="blue" rant="false">Good night, sleep tight :*</message>
+    <message type="goodnight" rarity="purple" rant="false">Я люблю когда ты засыпаешь у меня на плече.</message>
+    <message type="goodnight" rarity="orange" rant="false">zZz-Zzz-zzZ</message>
+  </evening>
+</messages>
