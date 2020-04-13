@@ -17,4 +17,9 @@
       </Or>
     </Condition>
   </Selfie_Request>
+  <Offended_Session_Start>
+    <Condition>
+      <ContainsOneOf>ты пидор, иди нахуй</ContainsOneOf>
+    </Condition>
+  </Offended_Session_Start>
 </MatchConditions>

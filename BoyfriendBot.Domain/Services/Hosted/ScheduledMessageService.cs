@@ -97,8 +97,8 @@ namespace BoyfriendBot.Domain.Services.Hosted
 
                 _logger.LogInformation($"Started");
 
-                var data = _sessionManagerSingleton.StartSession(SessionType.SIMPLE_DIALOG, 583334704);
-                await _sessionDataProcessor.ProcessAsync(data, 583334704);
+                //var data = _sessionManagerSingleton.StartSession(SessionType.SIMPLE_DIALOG, 583334704);
+                //await _sessionDataProcessor.ProcessAsync(data, 583334704);
 
                 //var result = await _telegramClient.SendMessageAsync(MessageCategory.ANY, MessageType.STANDARD, MessageRarity.BLUE, 583334704);
                 //

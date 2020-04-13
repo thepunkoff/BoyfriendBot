@@ -7,6 +7,7 @@ namespace BoyfriendBot.Domain.Services.Models
     public enum MatchCategory
     {
         COMMAND = 0,
-        SELFIE_REQUEST = 1 
+        SELFIE_REQUEST = 1,
+        OFFENDED_SESSION_START = 2
     }
 }

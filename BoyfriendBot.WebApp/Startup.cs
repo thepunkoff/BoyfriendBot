@@ -93,6 +93,7 @@ namespace BoyfriendBot.WebApp
                 .AddTransient<IImageProvider, ImageProvider>()
                 .AddSingleton<ISessionManagerSingleton, SessionManagerSingleton>()
                 .AddTransient<ISessionDataProcessor, SessionDataProcessor>()
+                .AddTransient<ISessionBootstrapper, SessionBootstrapper>()
 
                 // Database
                 .AddDbContext<IBoyfriendBotDbContext, BoyfriendBotDbContext>(ServiceLifetime.Transient)

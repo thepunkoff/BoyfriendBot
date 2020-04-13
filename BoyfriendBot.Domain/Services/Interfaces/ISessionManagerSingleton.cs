@@ -10,5 +10,6 @@ namespace BoyfriendBot.Domain.Services.Interfaces
         StateData StartSession(SessionType type, long chatId);
         StateData UpdateSession(Session session, string userInput);
         void EndSession(long chatId, Session session);
+        void EndAllSessionsExcept(long chatId, Session sessionToKeep);
     }
 }

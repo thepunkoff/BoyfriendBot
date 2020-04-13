@@ -58,6 +58,11 @@ namespace BoyfriendBot.Domain.Services
                     chatId
                     );
             }
+            else if (_stringAnalyzer.IsMatch(userInput.ToLowerInvariant(), MatchCategory.OFFENDED_SESSION_START))
+            {
+                var sessionData = _sessionManagerSingleton.StartSession(SessionType.OFFENDED, chatId);
+                await _sessionDataProcessor.ProcessAsync(sessionData, chatId);
+            }
             else
             {
                 var sessions = _sessionManagerSingleton.GetActiveSessions(chatId);

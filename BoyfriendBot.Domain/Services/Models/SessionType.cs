@@ -6,6 +6,7 @@ namespace BoyfriendBot.Domain.Services.Models
 {
     public enum SessionType
     {
-        SIMPLE_DIALOG = 0
+        SIMPLE_DIALOG = 0,
+        OFFENDED = 1
     }
 }

@@ -33,7 +33,11 @@ namespace BoyfriendBot.Domain.Services
         {
             var value = data.Data;
 
-            if (value.Type == DataType.Boolean)
+            if (value.Type == DataType.Void)
+            {
+                return;
+            }
+            else if (value.Type == DataType.Boolean)
             {
                 _logger.LogInformation($"[{Const.Serilog.ListeningService}] Condition wasn't met.");
             }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using MoonSharp.Interpreter;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BoyfriendBot.Domain.Services
 {
@@ -11,18 +12,34 @@ namespace BoyfriendBot.Domain.Services
     {
         private readonly IResourceManager _resourceManager;
         private readonly ILogger<SessionManagerSingleton> _logger;
+        private readonly ISessionBootstrapper _sessionBootstrapper;
 
         private Dictionary<long, List<Session>> _sessions;
 
         public SessionManagerSingleton(
               IResourceManager resourceManager
             , ILogger<SessionManagerSingleton> logger
+            , ISessionBootstrapper sessionBootstrapper
             )
         {
             _resourceManager = resourceManager;
             _logger = logger;
+            _sessionBootstrapper = sessionBootstrapper;
 
             _sessions = new Dictionary<long, List<Session>>();
+        }
+
+        public void EndAllSessionsExcept(long chatId, Session sessionToKeep)
+        {
+            var allSessions = GetActiveSessions(chatId);
+
+            foreach (var session in allSessions.Reverse<Session>())
+            {
+                if (!ReferenceEquals(session, sessionToKeep))
+                {
+                    allSessions.Remove(session);
+                }
+            }
         }
 
         public void EndSession(long chatId, Session session)
@@ -54,9 +71,11 @@ namespace BoyfriendBot.Domain.Services
         {
             var session = new Session(type, chatId);
 
-            var filePath = _resourceManager.GetSessionScriptPath(type);
+            _sessionBootstrapper.BootstrapSession(this, session);
 
-            session.State.DoFile(filePath);
+            var scriptFilePath = _resourceManager.GetSessionScriptPath(type);
+
+            session.State.DoFile(scriptFilePath);
 
             AddSession(session);
 
