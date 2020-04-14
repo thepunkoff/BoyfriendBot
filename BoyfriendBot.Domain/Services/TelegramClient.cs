@@ -30,15 +30,31 @@ namespace BoyfriendBot.Domain.Services
             _logger = logger;
         }
 
+        public async Task<SendMessageResult> SendMessageAsync(string categoryString, MessageType type, MessageRarity rarity, long chatId)
+        {
+            var message = await _messageTextProvider.GetMessage(categoryString, type, rarity, chatId);
+
+            return await SendBotMessageAsync(message, chatId);
+        }
+
         public async Task<SendMessageResult> SendMessageAsync(MessageCategory category, MessageType type, MessageRarity rarity, long chatId)
+        {
+            var message = await _messageTextProvider.GetMessage(category, type, rarity, chatId);
+
+            return await SendBotMessageAsync(message, chatId);
+        }
+
+        private async Task<SendMessageResult> SendBotMessageAsync(BotMessage message, long chatId)
         {
             var redalertMessage = false;
 
-            var message = await _messageTextProvider.GetMessage(category, type, rarity, chatId);
-
             if (message == null)
             {
-                message.Text = Const.RedAlertMessage;
+                message = new BotMessage()
+                {
+                    Text = Const.RedAlertMessage
+                };
+                
                 redalertMessage = true;
             }
 
@@ -81,9 +97,9 @@ namespace BoyfriendBot.Domain.Services
             {
                 _logger.LogInformation($"Message sent. " +
                             $"ChatId: {chatId}, " +
-                            $"Category: {category}, " +
-                            $"Type: {type}, " +
-                            $"Rarity: {rarity}.");
+                            $"Category: {message.Category}, " +
+                            $"Type: {message.Type}, " +
+                            $"Rarity: {message.Rarity}.");
             }
 
             return SendMessageResult.CreateSuccess();

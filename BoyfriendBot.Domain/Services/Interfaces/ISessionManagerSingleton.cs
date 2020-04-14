@@ -1,5 +1,6 @@
 ﻿using BoyfriendBot.Domain.Services.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BoyfriendBot.Domain.Services.Interfaces
 {
@@ -7,8 +8,8 @@ namespace BoyfriendBot.Domain.Services.Interfaces
     {
         List<Session> GetActiveSessions(long chatId);
 
-        StateData StartSession(SessionType type, long chatId);
-        StateData UpdateSession(Session session, string userInput);
+        Task StartSession(SessionType type, long chatId);
+        void UpdateSession(Session session, string userInput);
         void EndSession(long chatId, Session session);
         void EndAllSessionsExcept(long chatId, Session sessionToKeep);
     }

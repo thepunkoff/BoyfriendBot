@@ -1,21 +1,15 @@
-﻿using BoyfriendBot.Domain.AppSettings;
-using BoyfriendBot.Domain.Core;
+﻿using BoyfriendBot.Domain.Core;
 using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Rant;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace BoyfriendBot.Domain.Services
 {
     public class BotMessageProvider : IBotMessageProvider
     {
-        private readonly MessageTextProviderAppSettings _appSettings;
         private readonly ILogger<BotMessageProvider> _logger;
         private readonly IMessageTextTransformer _messageTextTransformer;
         private readonly IUserStorage _userStorage;
@@ -23,15 +17,13 @@ namespace BoyfriendBot.Domain.Services
         private readonly IResourceManager _resourceManager;
 
         public BotMessageProvider(
-              IOptions<MessageTextProviderAppSettings> appSettings
-            , ILogger<BotMessageProvider> logger
+              ILogger<BotMessageProvider> logger
             , IMessageTextTransformer messageTextTransformer
             , IUserStorage userStorage
             , IImageProvider imageProvider
             , IResourceManager resourceManager
             )
         {
-            _appSettings = appSettings.Value;
             _logger = logger;
             _messageTextTransformer = messageTextTransformer;
             _userStorage = userStorage;
@@ -39,15 +31,29 @@ namespace BoyfriendBot.Domain.Services
             _resourceManager = resourceManager;
         }
 
+        public async Task<BotMessage> GetMessage(string category, MessageType type, MessageRarity rarity, long chatId)
+        {
+            return await GetBotMessage(category.ToLowerInvariant(), type, rarity, chatId);
+        }
+
         public async Task<BotMessage> GetMessage(MessageCategory category, MessageType type, MessageRarity rarity, long chatId)
+        {
+            return await GetBotMessage(category.ToString().ToLowerInvariant(), type, rarity, chatId);
+        }
+
+        private async Task<BotMessage> GetBotMessage(string categoryString, MessageType type, MessageRarity rarity, long chatId)
         {
             var xDoc = _resourceManager.GetMessagesDoc();
 
-            var categoryString = category.ToString().ToLowerInvariant();
             var typeString = type.ToString().ToLowerInvariant();
             var rarityString = rarity.ToString().ToLowerInvariant();
 
             var xCategory = xDoc.Root.Element(categoryString);
+
+            if(xCategory == null)
+            {
+                xCategory = xDoc.Root.Element("scripts").Descendants().Where(x => x.Name == categoryString).FirstOrDefault();
+            }
 
             var xMessages = xCategory
                 .Elements()
@@ -67,7 +73,12 @@ namespace BoyfriendBot.Domain.Services
 
             var xMessage = xMessages[index];
 
-            BotMessage message = new BotMessage();
+            BotMessage message = new BotMessage()
+            {
+                Category = categoryString.ToUpperInvariant(),
+                Type = type,
+                Rarity = rarity
+            };
 
             if (string.IsNullOrWhiteSpace(xMessage.Value))
             {

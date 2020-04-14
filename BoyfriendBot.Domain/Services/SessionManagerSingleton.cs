@@ -1,10 +1,10 @@
 ﻿using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
 using Microsoft.Extensions.Logging;
-using MoonSharp.Interpreter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BoyfriendBot.Domain.Services
 {
@@ -67,11 +67,11 @@ namespace BoyfriendBot.Domain.Services
             }
         }
 
-        public StateData StartSession(SessionType type, long chatId)
+        public async Task StartSession(SessionType type, long chatId)
         {
             var session = new Session(type, chatId);
 
-            _sessionBootstrapper.BootstrapSession(this, session);
+            await _sessionBootstrapper.BootstrapSession(this, session);
 
             var scriptFilePath = _resourceManager.GetSessionScriptPath(type);
 
@@ -79,10 +79,9 @@ namespace BoyfriendBot.Domain.Services
 
             AddSession(session);
 
-            DynValue result = null;
             try
             {
-                result = session.State.Call(session.State.Globals["start"]);
+                session.State.Call(session.State.Globals["start"]);
             }
             catch (Exception ex)
             {
@@ -90,22 +89,11 @@ namespace BoyfriendBot.Domain.Services
 
                 EndSession(chatId, session);
             }
-
-            return new StateData
-            {
-                Data = result
-            };
         }
 
-        public StateData UpdateSession(Session session, string userInput)
+        public void UpdateSession(Session session, string userInput)
         {
-            var update = session.State.Globals["update"];
-            var result = session.State.Call(session.State.Globals["update"], userInput);
-
-            return new StateData
-            {
-                Data = result
-            };
+            session.State.Call(session.State.Globals["update"], userInput);
         }
 
         private void AddSession(Session session)

@@ -1,12 +1,8 @@
 ﻿using BoyfriendBot.Domain.Services.Interfaces;
 using BoyfriendBot.Domain.Services.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Telegram.Bot;
 
 namespace BoyfriendBot.Domain.Services
 {
@@ -14,32 +10,23 @@ namespace BoyfriendBot.Domain.Services
     {
         private readonly ICommandProcessor _commandProcessor;
         private readonly ITelegramClient _telegramClient;
-        private readonly IUserStorage _userStorage;
-        private readonly IBotMessageProvider _botMessageProvider;
         private readonly IRarityRoller _rarityRoller;
         private readonly IStringAnalyzer _stringAnalyzer;
         private readonly ISessionManagerSingleton _sessionManagerSingleton;
-        private readonly ISessionDataProcessor _sessionDataProcessor;
 
         public InputProcessor(
               ICommandProcessor commandProcessor
             , ITelegramClient telegramClient
-            , IUserStorage userStorage
-            , IBotMessageProvider botMessageProvider
             , IRarityRoller rarityRoller
             , IStringAnalyzer stringAnalyzer
             , ISessionManagerSingleton sessionManagerSingleton
-            , ISessionDataProcessor sessionDataProcessor
             )
         {
             _commandProcessor = commandProcessor;
             _telegramClient = telegramClient;
-            _userStorage = userStorage;
-            _botMessageProvider = botMessageProvider;
             _rarityRoller = rarityRoller;
             _stringAnalyzer = stringAnalyzer;
             _sessionManagerSingleton = sessionManagerSingleton;
-            _sessionDataProcessor = sessionDataProcessor;
         }
 
         public async Task ProcessUserInput(string userInput, long chatId)
@@ -60,8 +47,7 @@ namespace BoyfriendBot.Domain.Services
             }
             else if (_stringAnalyzer.IsMatch(userInput.ToLowerInvariant(), MatchCategory.OFFENDED_SESSION_START))
             {
-                var sessionData = _sessionManagerSingleton.StartSession(SessionType.OFFENDED, chatId);
-                await _sessionDataProcessor.ProcessAsync(sessionData, chatId);
+                _sessionManagerSingleton.StartSession(SessionType.OFFENDED, chatId);
             }
             else
             {
@@ -71,8 +57,7 @@ namespace BoyfriendBot.Domain.Services
                 {
                     foreach (var session in sessions.Reverse<Session>())
                     {
-                        var sessionData = session.Update(_sessionManagerSingleton, userInput);
-                        await _sessionDataProcessor.ProcessAsync(sessionData, chatId);
+                        _sessionManagerSingleton.UpdateSession(session, userInput);
                     }
                 }
                 else

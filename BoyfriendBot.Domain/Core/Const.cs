@@ -8,7 +8,7 @@ namespace BoyfriendBot.Domain.Core
     public class Const
     {
         public const string ErrorMessage = "Упс, произошла какая-то ошибка.";
-        public const string RedAlertMessage = "Ты мне нравишься.";
+        public const string RedAlertMessage = "...";
 
         public class Serilog
         {

@@ -9,11 +9,8 @@
 end
 
 local function check(input, step)
-
 	if step == 0 then
-		
 		local match_list = {"давай", "погнали", "ок", "го", "согласен", "согласна", "хорошо", "ладно", "поехали", "не против", "можно"}
-
 		if value_contains_any(input, match_list) then
 			return true
 		else
@@ -27,7 +24,6 @@ end
 local step
 local expireTime
 
--- add parameters for dynamic expire_time
 local function update_expire_time()
 	local now = os.date("%Y-%m-%d %H:%M:%S")
 	local y, mon, d, h, Min, s = now:match("(%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)")
@@ -36,41 +32,31 @@ local function update_expire_time()
 end
 
 function start( ... )
-
-	local bundle = {"хей!", 4, "го болтать"}
-
 	step = 0
-
 	update_expire_time()
-
-	return bundle
+	text_message("хей!")
+	delay(4, function()
+		text_message("го болтать")	
+	end)
 end
 
 function update(input)
-
 	if os.difftime(os.time(), expireTime) > 0 then
-		return {nil}
+		end_session()
 	end
 
 	if step == 0 then
-
 		if check(input, step) then
-
-			local bundle = {"Еее) Как делв?)", 1, "дела*"}
-
 			step = step + 1
 			update_expire_time()
-
-			return bundle
-		else
-			return false;
+			text_message("Еее) Как делв?)")
+			delay(1, function()
+				text_message("дела*")	
+			end)
 		end
 	elseif step == 1 then
-
-		local bundle = {"все понятно! Удачи!", nil}
-
-		return bundle
-
+		text_message("все понятно! Удачи!")
+		end_session()
 	else
 		return "[update] no such step: " .. step;
 	end	

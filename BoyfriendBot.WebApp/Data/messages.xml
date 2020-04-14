@@ -1,6 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <messages>
+  <scripts>
+    <offended>
+      <offended_start>
+        <message type="standard" rarity="white" rant="false">Знаешь, это было грубовато.</message>
+        <message type="standard" rarity="white" rant="false">Э, а по-нормальному нельзя разговаривать?</message>
+        <message type="standard" rarity="white" rant="true"><![CDATA[Никогда не [if: [eq:[v: botGender];male];думал;думала], что ты можешь такое писать.]]></message>
+      </offended_start>
+      <offended_good>
+        <message type="standard" rarity="white" rant="false">Ладно уж, со всеми бывает.</message>
+        <message type="standard" rarity="white" rant="true"><![CDATA[Хорошо, я тебя [if: [eq:[v: botGender];male];простил;простила]]]></message>
+        <message type="standard" rarity="white" rant="false">Хорошо, все нормально</message>
+      </offended_good>
+      <offended_bad>
+        <message type="standard" rarity="white" rant="false">Я с тобой не разговариваю.</message>
+        <message type="standard" rarity="white" rant="false">Я не хочу с тобой разговаривать!</message>
+        <message type="standard" rarity="green" rant="false">Извинишься, поговорим.</message>
+      </offended_bad>
+    </offended>
+  </scripts>
   <selfie>
     <message type="standard" rarity="white" rant="false" image="selfie">Лови!</message>
     <message type="standard" rarity="white" rant="false" image="selfie">Это я</message>

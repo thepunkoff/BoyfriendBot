@@ -30,7 +30,6 @@ namespace BoyfriendBot.Domain.Services.Hosted
         private readonly IRarityRoller _rarityRoller;
         private readonly IEventManager _eventManager;
         private readonly ISessionManagerSingleton _sessionManagerSingleton;
-        private readonly ISessionDataProcessor _sessionDataProcessor;
 
         private CancellationTokenSource _cts;
 
@@ -48,7 +47,6 @@ namespace BoyfriendBot.Domain.Services.Hosted
             , IRarityRoller rarityRoller
             , IEventManager eventManager
             , ISessionManagerSingleton sessionManagerSingleton
-            , ISessionDataProcessor sessionDataProcessor
             )
         {
             _appSettings = appSettings.Value;
@@ -62,7 +60,6 @@ namespace BoyfriendBot.Domain.Services.Hosted
             _rarityRoller = rarityRoller;
             _eventManager = eventManager;
             _sessionManagerSingleton = sessionManagerSingleton;
-            _sessionDataProcessor = sessionDataProcessor;
 
             _logger.LogInformation($"Initializing scheduled messaging service...");
 

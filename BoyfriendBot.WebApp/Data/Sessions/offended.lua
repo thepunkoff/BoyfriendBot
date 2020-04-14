@@ -20,17 +20,20 @@ end
 
 function start( ... )
 	end_other_sessions()
-	text_message("это было грубо")
-	delay(2, function()
-		text_message("обида...")
-	end)
+	text_message_category("offended_start")
+
+	if math.random() < 0.2 then
+		delay(math.random(2, 5), function()
+			text_message("Я на тебя " .. (gender and "обиделся." or "обиделась."))
+		end)
+	end
 end
 
 function update(input)
 	if check(input) then
-		text_message("ладно, больше не обижаюсь")
+		text_message_category("offended_good")
 		end_session()
 	else
-		text_message("я с тобой не разговариваю")
+		text_message_category("offended_bad")
 	end
 end
